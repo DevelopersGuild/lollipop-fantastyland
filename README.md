@@ -6,7 +6,7 @@
 1. Clone the repo.
 1. Navigate to the 'SSPDALFAF' folder in your terminal terminal/command prompt.
 1. Run `npm install`. This will install all the packages used in the app.
-1. Run `node app.js`
+1. Run `npm start`
 1. Open [http://localhost:3000/](http://localhost:3000/) and you should see your game!
 
 ## Other Info

@@ -2,13 +2,14 @@
   "name": "SSPDALFAF",
   "version": "1.0.0",
   "description": "DG HTML5 game project",
-  "main": "index.js",
+  "main": "app.js",
   "dependencies": {
     "express": "^4.13.4",
     "nunjucks": "^2.4.2"
   },
   "devDependencies": {},
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
