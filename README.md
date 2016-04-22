@@ -6,13 +6,12 @@
 1. Clone the repo.
 1. Navigate to the 'SSPDALFAF' folder in your terminal terminal/command prompt.
 1. Run `npm install`. This will install all the packages used in the app.
-1. Run `npm start`
-1. Open [http://localhost:3000/](http://localhost:3000/) and you should see your game!
+1. Run `gulp server`
+1. Open [http://localhost:3001/](http://localhost:3001/) and you should see your game!
 
 ## Other Info
 
-* `public/js/main.js` is the file that you want to write your JavaScript in.
-	* Whenever you make a change to the above file, refresh the tab that's on http://localhost:3000/
+* All of our Phaser.io code will go in the client/ directory
 
 ## License
 
