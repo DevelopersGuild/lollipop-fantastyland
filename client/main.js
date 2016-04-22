@@ -6,7 +6,6 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 
 var player;
 var cursors;
-var health;
 var healthText;
 var mana;
 var manaText;
@@ -23,6 +22,7 @@ function preload() {
 
 function create() {
     player = game.add.sprite(500, 200, 'player');
+    player.health = 100;
     game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     levelText = game.add.text(16, 16, 'level: 1', { fontSize: '16px', fill: '#670'});
@@ -35,6 +35,7 @@ function create() {
 
 function update() {
 	rabbit.frame = 5;
+	healthText.text = 'Health: ' + player.health;
     player.body.velocity.x = 0;
     player.body.velocity.y = 0;
     if (cursors.left.isDown)
