@@ -6,6 +6,7 @@
 1. Clone the repo.
 1. Navigate to the 'lollipop-fantastyland' folder in your terminal terminal/command prompt.
 1. Run `npm install`. This will install all the packages used in the app.
+1. Run `npm install -g gulp` to install Gulp.
 1. Run `gulp server`
 1. Open [http://localhost:3001/](http://localhost:3001/) and you should see your game!
 
