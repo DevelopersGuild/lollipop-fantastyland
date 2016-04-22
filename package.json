@@ -2,14 +2,26 @@
   "name": "SSPDALFAF",
   "version": "1.0.0",
   "description": "DG HTML5 game project",
-  "main": "app.js",
+  "main": "server/index.js",
   "dependencies": {
     "express": "^4.13.4",
-    "nunjucks": "^2.4.2"
+    "nunjucks": "^2.4.2",
+    "phaser": "^2.4.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.12.3",
+    "browserify": "^13.0.0",
+    "buffer": "^4.6.0",
+    "gulp": "^3.9.1",
+    "gulp-if": "^2.0.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.3",
+    "nodemon": "^1.9.1",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
   "scripts": {
-    "start": "node app.js",
+    "start": "node server/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
