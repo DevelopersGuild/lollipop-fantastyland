@@ -4,7 +4,7 @@
 
 1. If you don't have Node.js, download it at [http://nodejs.org/](http://nodejs.org/) and install it.
 1. Clone the repo.
-1. Navigate to the 'SSPDALFAF' folder in your terminal terminal/command prompt.
+1. Navigate to the 'lollipop-fantastyland' folder in your terminal terminal/command prompt.
 1. Run `npm install`. This will install all the packages used in the app.
 1. Run `gulp server`
 1. Open [http://localhost:3001/](http://localhost:3001/) and you should see your game!
@@ -15,4 +15,4 @@
 
 ## License
 
-Code is licensed under MIT. See the [LICENSE](https://github.com/DevelopersGuild/SSPDALFAF/blob/master/LICENSE) file for details.
+Code is licensed under MIT. See the [LICENSE](https://github.com/DevelopersGuild/lollipop-fantastyland/blob/master/LICENSE) file for details.
