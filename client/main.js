@@ -6,6 +6,14 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create
 
 var player;
 var cursors;
+var health;
+var healthText;
+var mana;
+var manaText;
+var level;
+var levelText;
+var exp;
+var expText;
 
 function preload() {
     game.load.spritesheet('player', '/assets/player.png', 32, 16);
@@ -15,6 +23,10 @@ function create() {
     player = game.add.sprite(500, 200, 'player');
     game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
+    levelText = game.add.text(16, 16, 'level: 1', { fontSize: '16px', fill: '#670'});
+    healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
+    manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
+    expText = game.add.text(16, 64, 'Exp: 0', {fontSize: '16px', fill: '#670'});
     cursors = game.input.keyboard.createCursorKeys();
 }
 
