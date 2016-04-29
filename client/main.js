@@ -16,21 +16,6 @@ var rabbit;
 var rabbitHp;
 
 function preload() {
-<<<<<<< HEAD
-    game.load.spritesheet('player', 'assets/player.png', 32, 16);
-}
-
-function create() {
-    player = game.add.sprite(500, 200, 'player');
-    player.anchor.setTo(0.5, 0.5);    
-    game.physics.arcade.enable(player);
-    player.body.collideWorldBounds = true;
-    levelText = game.add.text(16, 16, 'level: 1', { fontSize: '16px', fill: '#670'});
-    healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
-    manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
-    expText = game.add.text(16, 64, 'Exp: 0', {fontSize: '16px', fill: '#670'});
-    cursors = game.input.keyboard.createCursorKeys();
-=======
   // Modules
   playerModule.initialize(game);
   playerModule.preload();
@@ -51,7 +36,6 @@ function create() {
   game.physics.arcade.enable(rabbit);
   rabbit.body.collideWorldBounds = true;
   rabbitHp = 3;
->>>>>>> origin/master
 }
 
 function update() {
@@ -86,10 +70,5 @@ function killEnemy(player, rabbit){
       level++;
       player.exp = 0;
     }
-<<<<<<< HEAD
-//    player.rotation = game.physics.arcade.angleToPointer(player);
-=======
-}
->>>>>>> origin/master
-
+  }
 }

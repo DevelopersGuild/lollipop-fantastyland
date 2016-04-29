@@ -13,6 +13,7 @@ function preload() {
 function create() {
   player = game.add.sprite(500, 200, 'player');
   game.physics.arcade.enable(player);
+  player.anchor.setTo(0.5, 0.5);
   player.body.collideWorldBounds = true;
 
   cursors = game.input.keyboard.createCursorKeys();
