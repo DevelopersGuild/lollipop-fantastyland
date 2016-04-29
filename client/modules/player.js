@@ -112,15 +112,15 @@ function fire() {
 }
 
 export default {
-  initialize: initialize,
-  preload: preload,
-  create: create,
-  update: update,
-  getLevel: getLevel,
-  getHealth: getHealth,
-  getExp: getExp,
-  getPlayer: getPlayer,
-  getBullets: getBullets,
+  initialize,
+  preload,
+  create,
+  update,
+  getLevel,
+  getHealth,
+  getExp,
+  getPlayer,
+  getBulets,
 };
 
 var Inventory = {
@@ -128,11 +128,4 @@ var Inventory = {
   numBananas: 0,
 }
 
-Inventory.numApples += 1;    
-
-
-
-
-
-
-
+Inventory.numApples += 1;
