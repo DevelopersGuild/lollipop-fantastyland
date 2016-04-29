@@ -16,11 +16,12 @@ var exp;
 var expText;
 
 function preload() {
-    game.load.spritesheet('player', '/assets/player.png', 32, 16);
+    game.load.spritesheet('player', 'assets/player.png', 32, 16);
 }
 
 function create() {
     player = game.add.sprite(500, 200, 'player');
+    player.anchor.setTo(0.5, 0.5);    
     game.physics.arcade.enable(player);
     player.body.collideWorldBounds = true;
     levelText = game.add.text(16, 16, 'level: 1', { fontSize: '16px', fill: '#670'});
@@ -49,4 +50,6 @@ function update() {
     {
     	player.body.velocity.y = 300;
     }
+//    player.rotation = game.physics.arcade.angleToPointer(player);
+
 }
