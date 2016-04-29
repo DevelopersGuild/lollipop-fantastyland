@@ -111,7 +111,7 @@ function fire() {
   }
 }
 
-module.exports = {
+export default {
   initialize: initialize,
   preload: preload,
   create: create,

@@ -1,8 +1,8 @@
+import playerModule from './modules/player';
+
 window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
-
-var playerModule = require('./modules/player');
 
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
