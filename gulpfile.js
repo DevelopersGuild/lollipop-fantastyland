@@ -29,7 +29,7 @@ gulp.task('server', ['compile-js'], function() {
     open: false,
   });
 
-  gulp.watch(['client/*.js'], ['compile-js']);
+  gulp.watch(['client/**/*.js'], ['compile-js']);
 
   return nodemon({
     script: 'server/index.js',
