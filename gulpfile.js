@@ -1,4 +1,4 @@
-
+var babelify = require('babelify');
 var browserify = require('browserify');
 var browserSync = require('browser-sync');
 var buffer = require('vinyl-buffer');
@@ -11,6 +11,7 @@ var uglify = require('gulp-uglify');
 
 gulp.task('compile-js', function() {
   return browserify('client/main.js')
+    .transform(babelify)
     .bundle()
     .pipe(source('scripts.min.js'))
     .pipe(buffer())
