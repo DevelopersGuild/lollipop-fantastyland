@@ -14,6 +14,8 @@ var rabbit;
 var hitText;
 var levelUpText;
 var gameOverText;
+var rabbitHp;
+var fruit;
 
 function preload() {
   // Modules
@@ -21,6 +23,7 @@ function preload() {
   playerModule.preload();
 
   game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
+  game.load.image('fruit', '/assets/peach.png');
 }
 
 function create() {
@@ -35,6 +38,12 @@ function create() {
   game.physics.arcade.enable(rabbit);
   rabbit.body.collideWorldBounds = true;
   rabbit.health = 3;
+  rabbitHp = 3;
+  fruit = game.add.sprite(300, 300, 'fruit');
+  game.physics.arcade.enable(fruit);
+  fruit.body.collideWorldBounds = true;
+  fruit.healingStrength = 25;
+
 }
 
 function update() {
@@ -49,6 +58,7 @@ function update() {
   expText.text = 'Exp: ' + playerModule.getExp();
 
   game.physics.arcade.overlap(playerModule.getPlayer(), rabbit, killEnemy, null, this);
+  game.physics.arcade.overlap(playerModule.getPlayer(), fruit, pickUpFruit, null, this);
 }
 
 function destroyText(text) {
@@ -97,4 +107,49 @@ function killEnemy(player, rabbit) {
     player.kill();
     gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
   }
+
+
+
 }
+
+
+//var fruit = {};
+var pickUpText;
+var healingStrength;
+
+function pickUpFruit (player, fruit) {
+ 
+  player.health += fruit.healingStrength;
+  if (player.health > 100) {
+      player.health = 100;
+  }
+
+  function killFruitText () {
+    pickUpText.kill();
+
+  }  
+
+  setTimeout(killFruitText,1000);
+  fruit.kill();
+  
+
+  var blueBox = document.getElementById("ui-blueBox"); 
+  blueBox.style.display = "block";
+  blueBox.style.width = player.health + "px";
+
+  pickUpText = game.add.text(20, 550, "Fruit obtained", { fontSize: '16px', fill: '#670'});
+}
+
+function Fruit(name, strength) {
+    var fruitName = name;
+    var healingStrength = strength;
+/*    Fruit (String_name, int_healingStrength) {
+      name = _name;
+      healingStrength = _healingStrength;*/
+
+  //}
+}
+
+//  fruit.banana = new Fruit("banana", 4);
+
+
