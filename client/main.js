@@ -17,6 +17,7 @@ let levelUpText;
 let gameOverText;
 let rabbitHp;
 let fruit;
+let spaceKey;
 
 function preload() {
   // Modules

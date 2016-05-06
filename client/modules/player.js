@@ -1,13 +1,13 @@
-var game;
-var player;
-var bullets;
-var fireRate = 300;
-var nextFire = 0;
-var w;
-var s;
-var a;
-var d;
-var cursors;
+let game;
+let player;
+let bullets;
+let fireRate = 300;
+let nextFire = 0;
+let w;
+let s;
+let a;
+let d;
+let cursors;
 
 function initialize(_game) {
   game = _game;
@@ -100,7 +100,7 @@ function getBullets() {
 function fire() {
   if (game.time.now > nextFire && bullets.countDead() > 0) {
     nextFire = game.time.now + fireRate;
-    var bullet = bullets.getFirstDead();
+    const bullet = bullets.getFirstDead();
     bullet.reset(player.x, player.y);
     bullet.body.velocity.x = player.body.velocity.x;
     bullet.body.velocity.y = player.body.velocity.y;
