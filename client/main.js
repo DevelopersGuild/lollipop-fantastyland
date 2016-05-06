@@ -124,30 +124,20 @@ function killEnemy(player, rabbit) {
 
 
 //var fruit = {};
-var pickUpText;
 var healingStrength;
 
 function pickUpFruit (player, fruit) {
- 
+
   player.health += fruit.healingStrength;
   if (player.health > 100) {
       player.health = 100;
   }
 
   function killFruitText () {
-    pickUpText.kill();
-
-  }  
+  }
 
   setTimeout(killFruitText,1000);
   fruit.kill();
-  
-
-  var blueBox = document.getElementById("ui-blueBox"); 
-  blueBox.style.display = "block";
-  blueBox.style.width = player.health + "px";
-
-  pickUpText = game.add.text(20, 550, "Fruit obtained", { fontSize: '16px', fill: '#670'});
 }
 
 function Fruit(name, strength) {
