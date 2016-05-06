@@ -11,6 +11,7 @@ var manaText;
 var levelText;
 var expText;
 var rabbit;
+var npc;
 var hitText;
 var levelUpText;
 var gameOverText;
@@ -23,6 +24,7 @@ function preload() {
   playerModule.preload();
 
   game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
+  game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
   game.load.tilemap('map', 'assets/grassland.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('grass', 'assets/Tile Sets/grass.png');
   game.load.image('fruit', '/assets/peach.png');
@@ -53,6 +55,11 @@ function create() {
   game.physics.arcade.enable(fruit);
   fruit.body.collideWorldBounds = true;
   fruit.healingStrength = 25;
+  npc = game.add.sprite(100, 400, 'npc');
+  game.physics.arcade.enable(npc);
+  npc.animations.add('walk');
+  npc.animations.play('walk', 5, true);
+  npc.collideWorldBounds = true;
 
 }
 
@@ -69,12 +76,24 @@ function update() {
 
   game.physics.arcade.overlap(playerModule.getPlayer(), rabbit, killEnemy, null, this);
   game.physics.arcade.overlap(playerModule.getPlayer(), fruit, pickUpFruit, null, this);
+  game.physics.arcade.overlap(playerModule.getPlayer(), npc, displayDialogue, null, this);
 }
 
 function destroyText(text) {
   setTimeout(function() {
     text.destroy()
   }, 1000);
+}
+
+var dialogue;
+function displayDialogue(player, npc){
+	setTimeout(function() {
+		dialogue = game.add.text(npc.x, npc.y-18, "What do you want to buy today?", { fontSize: '12px', fill: 'red'})
+		destroyText(dialogue);
+		}
+		, 2000);
+	dialogue = game.add.text(npc.x, npc.y-18, "Hi there!", { fontSize: '12px', fill: 'red'});
+	destroyText(dialogue);
 }
 
 function killEnemy(player, rabbit) {
