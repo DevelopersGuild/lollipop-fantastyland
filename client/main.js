@@ -23,20 +23,10 @@ function preload() {
   playerModule.preload();
 
   game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
-  game.load.tilemap('map', 'assets/grassland.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.image('grass', 'assets/Tile Sets/grass.png');
   game.load.image('fruit', '/assets/peach.png');
 }
 
-var map;
-var layer;
 function create() {
-  // Tilemap
-  map = game.add.tilemap('map');
-  map.addTilesetImage('grass');
-  layer = map.createLayer('BackgroundLayer', 800, 600);
-  //layer.resizeWorld();
-
   // Modules
   playerModule.create();
 
@@ -53,7 +43,13 @@ function create() {
   game.physics.arcade.enable(fruit);
   fruit.body.collideWorldBounds = true;
   fruit.healingStrength = 25;
+  spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  spaceKey.onDown.add(togglePause, this);
+}
 
+function togglePause() {
+
+    game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
 }
 
 function update() {
@@ -69,7 +65,9 @@ function update() {
 
   game.physics.arcade.overlap(playerModule.getPlayer(), rabbit, killEnemy, null, this);
   game.physics.arcade.overlap(playerModule.getPlayer(), fruit, pickUpFruit, null, this);
+
 }
+
 
 function destroyText(text) {
   setTimeout(function() {
@@ -150,4 +148,4 @@ function Fruit(name, strength) {
   //}
 }
 
-
+//  fruit.banana = new Fruit("banana", 4);
