@@ -120,7 +120,7 @@ export default {
   getHealth,
   getExp,
   getPlayer,
-  getBulets,
+  getBullets,
 };
 
 var Inventory = {

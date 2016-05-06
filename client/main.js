@@ -4,18 +4,19 @@ window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
 
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+const game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
 
-var healthText;
-var manaText;
-var levelText;
-var expText;
-var rabbit;
-var npc;
-var hitText;
-var levelUpText;
-var gameOverText;
-var fruit;
+let healthText;
+let manaText;
+let levelText;
+let expText;
+let rabbit;
+let npc;
+let hitText;
+let levelUpText;
+let gameOverText;
+let rabbitHp;
+let fruit;
 
 function preload() {
   // Modules
@@ -101,7 +102,7 @@ function update() {
 
 
 function destroyText(text) {
-  setTimeout(function() {
+  setTimeout(() => {
     text.destroy()
   }, 1000);
 }
@@ -144,8 +145,7 @@ function killEnemy(player, rabbit) {
 
 }
 
-//var fruit = {};
-var healingStrength;
+let healingStrength;
 
 function pickUpFruit (player, fruit) {
 
@@ -154,10 +154,6 @@ function pickUpFruit (player, fruit) {
       player.health = 100;
   }
 
-  function killFruitText () {
-  }
-
-  setTimeout(killFruitText,1000);
   fruit.kill();
 }
 
@@ -181,7 +177,7 @@ function shootEnemy(rabbit, bullet) {
   // show text when hit
   hitText = game.add.text(rabbit.x, rabbit.y, "-1", { fontSize: '16px', fill: 'red'});
   destroyText(hitText);
-  var player = playerModule.getPlayer();
+  const player = playerModule.getPlayer();
   // stop the rabbit from approaching the player for the next 0.1 seconds
   rabbit.nextMove = game.time.now + 100;
   // Kill enemy if enemyHp is 0.
