@@ -1,7 +1,7 @@
 let game;
 let player;
 let bullets;
-let fireRate = 300;
+const fireRate = 200;
 let nextFire = 0;
 let w;
 let s;
@@ -48,32 +48,38 @@ function create() {
 }
 
 function update() {
-  if (player.body.velocity.x > 0)
-      player.body.acceleration.x = -300;
-  if (player.body.velocity.x < 0)
-      player.body.acceleration.x = 300;
-  if (player.body.velocity.y > 0)
-      player.body.acceleration.y = -300;
-  if (player.body.velocity.y < 0)
-      player.body.acceleration.y = 300;
+  if (player.body.velocity.x > 0) {
+    player.body.acceleration.x = -300;
+  }
+
+  if (player.body.velocity.x < 0) {
+    player.body.acceleration.x = 300;
+  }
+
+  if (player.body.velocity.y > 0){
+    player.body.acceleration.y = -300;
+  }
+
+  if (player.body.velocity.y < 0) {
+    player.body.acceleration.y = 300;
+  }
 
   player.body.maxVelocity.x = 200;
   player.body.maxVelocity.y = 200;
 
-  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown)
+  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown) {
     fire();
+  }
 
   if (a.isDown) {
-      player.body.acceleration.x = -500;
-  }
-  else if (d.isDown) {
-      player.body.acceleration.x = 500;
+    player.body.acceleration.x = -500;
+  } else if (d.isDown) {
+    player.body.acceleration.x = 500;
   }
   if (w.isDown) {
-      player.body.acceleration.y = -500;
-  }
-  else if (s.isDown) {
-      player.body.acceleration.y = 500;
+    player.body.acceleration.y = -500;
+  } else if (s.isDown) {
+    player.body.acceleration.y = 500;
   }
 }
 
