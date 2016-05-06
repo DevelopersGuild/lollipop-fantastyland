@@ -1,12 +1,13 @@
 var game;
 var player;
 var bullets;
-var fireRate = 300;
+var fireRate = 200;
 var nextFire = 0;
 var w;
 var s;
 var a;
 var d;
+var cursors;
 
 function initialize(_game) {
   game = _game;
@@ -34,6 +35,7 @@ function create() {
   a = game.input.keyboard.addKey(Phaser.Keyboard.A);
   s = game.input.keyboard.addKey(Phaser.Keyboard.S);
   d = game.input.keyboard.addKey(Phaser.Keyboard.D);
+  cursors = game.input.keyboard.createCursorKeys();
 
   // Initialize Level
   player.level = 1;
@@ -57,8 +59,9 @@ function update() {
 
   player.body.maxVelocity.x = 200;
   player.body.maxVelocity.y = 200;
-  player.rotation = game.physics.arcade.angleToPointer(player);
-  if (game.input.activePointer.isDown) fire();
+
+  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown)
+    fire();
 
   if (a.isDown) {
       player.body.acceleration.x = -500;
@@ -95,7 +98,12 @@ function fire() {
     nextFire = game.time.now + fireRate;
     var bullet = bullets.getFirstDead();
     bullet.reset(player.x, player.y);
-    game.physics.arcade.moveToPointer(bullet, 300);
+    bullet.body.velocity.x = player.body.velocity.x;
+    bullet.body.velocity.y = player.body.velocity.y;
+    if (cursors.left.isDown) bullet.body.velocity.x -= 500;
+    else if (cursors.right.isDown) bullet.body.velocity.x += 500;
+    if (cursors.up.isDown) bullet.body.velocity.y -= 500;
+    else if (cursors.down.isDown) bullet.body.velocity.y += 500;
   }
 }
 
