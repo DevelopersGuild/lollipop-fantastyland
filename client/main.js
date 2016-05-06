@@ -1,4 +1,5 @@
 import playerModule from './modules/player';
+import gunModule from './modules/gun';
 
 window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
@@ -22,7 +23,8 @@ let spaceKey;
 function preload() {
   // Modules
   playerModule.initialize(game);
-  playerModule.preload();
+  playerModule.preload(game);
+  gunModule.preload(game);
 
   game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
   game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
@@ -43,6 +45,10 @@ function create() {
 
   // Modules
   playerModule.create();
+
+  gunModule.initialize(game, playerModule.getPlayer());
+  gunModule.create();
+
 
   levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670'});
   healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
