@@ -32,8 +32,9 @@ function preload() {
 
 var map;
 var layer;
+
 function create() {
-  // Tilemap
+  // Map
   map = game.add.tilemap('map');
   map.addTilesetImage('grass');
   layer = map.createLayer('BackgroundLayer', 800, 600);
@@ -60,7 +61,12 @@ function create() {
   npc.animations.add('walk');
   npc.animations.play('walk', 5, true);
   npc.collideWorldBounds = true;
+  spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+  spaceKey.onDown.add(togglePause, this);
+}
 
+function togglePause() {
+    game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
 }
 
 function update() {
@@ -79,6 +85,7 @@ function update() {
   game.physics.arcade.overlap(playerModule.getPlayer(), npc, displayDialogue, null, this);
 }
 
+
 function destroyText(text) {
   setTimeout(function() {
     text.destroy()
@@ -87,27 +94,26 @@ function destroyText(text) {
 
 var dialogue;
 function displayDialogue(player, npc){
+	// player is knocked back
+	bounceBack(player);
+	// display dialogue
+	dialogue = game.add.text(npc.x, npc.y-18, "Hi there!", { fontSize: '12px', fill: 'red'});
+	destroyText(dialogue);
 	setTimeout(function() {
 		dialogue = game.add.text(npc.x, npc.y-18, "What do you want to buy today?", { fontSize: '12px', fill: 'red'})
 		destroyText(dialogue);
 		}
 		, 2000);
-	dialogue = game.add.text(npc.x, npc.y-18, "Hi there!", { fontSize: '12px', fill: 'red'});
-	destroyText(dialogue);
+	setTimeout(function() {
+		dialogue = game.add.text(npc.x, npc.y-18, "Have a nice day!", { fontSize: '12px', fill: 'red'})
+		destroyText(dialogue);
+		}
+		, 4000);
 }
 
 function killEnemy(player, rabbit) {
   // player is knocked back
-  if (player.body.velocity.x > 50)
-    player.body.velocity.x = -200;
-  else if (player.body.velocity.x < -50)
-    player.body.velocity.x = 200;
-  else player.body.velocity.x = 0;
-  if (player.body.velocity.y > 50)
-    player.body.velocity.y = -200;
-  else if (player.body.velocity.y < -50)
-    player.body.velocity.y = 200;
-  else player.body.velocity.y = 0;
+  bounceBack(player); 
   // deal damage to both of them
   rabbit.health--;
   player.health--;
@@ -137,10 +143,21 @@ function killEnemy(player, rabbit) {
     gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
   }
 
-
-
 }
 
+function bounceBack(player) {
+  // player is knocked back
+  if (player.body.velocity.x > 50)
+    player.body.velocity.x = -200;
+  else if (player.body.velocity.x < -50)
+    player.body.velocity.x = 200;
+  else player.body.velocity.x = 0;
+  if (player.body.velocity.y > 50)
+    player.body.velocity.y = -200;
+  else if (player.body.velocity.y < -50)
+    player.body.velocity.y = 200;
+  else player.body.velocity.y = 0;
+}
 
 //var fruit = {};
 var healingStrength;
@@ -169,4 +186,4 @@ function Fruit(name, strength) {
   //}
 }
 
-
+//  fruit.banana = new Fruit("banana", 4);

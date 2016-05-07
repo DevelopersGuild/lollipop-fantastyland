@@ -117,3 +117,17 @@ module.exports = {
   getExp: getExp,
   getPlayer: getPlayer,
 };
+
+var Inventory = {
+  numApples: 0,
+  numBananas: 0,
+}
+
+Inventory.numApples += 1;    
+
+
+
+
+
+
+
