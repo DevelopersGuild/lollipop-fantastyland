@@ -1,7 +1,7 @@
 var game;
 var player;
 var bullets;
-var fireRate = 200;
+var fireRate = 300;
 var nextFire = 0;
 var w;
 var s;
@@ -93,6 +93,10 @@ function getPlayer() {
   return player;
 }
 
+function getBullets() {
+  return bullets;
+}
+
 function fire() {
   if (game.time.now > nextFire && bullets.countDead() > 0) {
     nextFire = game.time.now + fireRate;
@@ -116,6 +120,7 @@ module.exports = {
   getHealth: getHealth,
   getExp: getExp,
   getPlayer: getPlayer,
+  getBullets: getBullets,
 };
 
 var Inventory = {
