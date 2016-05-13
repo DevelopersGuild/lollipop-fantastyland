@@ -129,9 +129,9 @@ export default {
   getBullets,
 };
 
-var Inventory = {
+const Inventory = {
   numApples: 0,
   numBananas: 0,
-}
+};
 
 Inventory.numApples += 1;

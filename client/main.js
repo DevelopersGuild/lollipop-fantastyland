@@ -50,10 +50,10 @@ function create() {
   gunModule.create();
 
 
-  levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670'});
+  levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
   healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
   // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
-  expText = game.add.text(16, 64, 'Exp: 0', {fontSize: '16px', fill: '#670'});
+  expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
   rabbit = game.add.sprite(200, 200, 'rabbit');
   game.physics.arcade.enable(rabbit);
   rabbit.body.collideWorldBounds = true;
@@ -78,7 +78,7 @@ function create() {
 }
 
 function togglePause() {
-  game.physics.arcade.isPaused = (game.physics.arcade.isPaused) ? false : true;
+  game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
 }
 
 function update() {
@@ -92,8 +92,7 @@ function update() {
     else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
     else if (rabbit.y > player.y) rabbit.animations.play('up');
     else rabbit.animations.play('down');
-  }
-  else if (player.x > rabbit.x) rabbit.frame = 7;
+  } else if (player.x > rabbit.x) rabbit.frame = 7;
   else if (player.x < rabbit.x) rabbit.frame = 4;
 
   // TEMP
@@ -115,18 +114,18 @@ function destroyText(text) {
 }
 
 let dialogue;
-function displayDialogue(player, npc){
+function displayDialogue(player, _npc) {
   // player is knocked back
-  game.physics.arcade.moveToObject(player, npc, -200);
+  game.physics.arcade.moveToObject(player, _npc, -200);
   // display dialogue
-  dialogue = game.add.text(npc.x, npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
+  dialogue = game.add.text(_npc.x, _npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
   destroyText(dialogue);
   setTimeout(() => {
-    dialogue = game.add.text(npc.x, npc.y - 18, 'What do you want to buy today?', { fontSize: '12px', fill: 'red' });
+    dialogue = game.add.text(_npc.x, _npc.y - 18, 'What do you want to buy today?', { fontSize: '12px', fill: 'red' });
     destroyText(dialogue);
   }, 2000);
   setTimeout(() => {
-    dialogue = game.add.text(npc.x, npc.y - 18, 'Have a nice day!', { fontSize: '12px', fill: 'red' });
+    dialogue = game.add.text(_npc.x, _npc.y - 18, 'Have a nice day!', { fontSize: '12px', fill: 'red' });
     destroyText(dialogue);
   }, 4000);
 }
@@ -166,10 +165,9 @@ function killEnemy(player, _rabbit) {
 }
 
 function pickUpFruit(player, _fruit) {
-
   player.health += fruit.healingStrength;
   if (player.health > 100) {
-      player.health = 100;
+    player.health = 100;
   }
 
   _fruit.kill();
@@ -203,7 +201,7 @@ function shootEnemy(_rabbit, bullet) {
     _rabbit.body.velocity.y = 0;
     _rabbit.health = 3;
     _rabbit.nextMove = game.time.now + 1000;
-  }
+
   // otherwise the rabbit is knocked back
-  else game.physics.arcade.moveToObject(rabbit, player, -100);
+  } else game.physics.arcade.moveToObject(rabbit, player, -100);
 }
