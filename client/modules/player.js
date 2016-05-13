@@ -1,13 +1,13 @@
-var game;
-var player;
-var bullets;
-var fireRate = 300;
-var nextFire = 0;
-var w;
-var s;
-var a;
-var d;
-var cursors;
+let game;
+let player;
+let bullets;
+const fireRate = 200;
+let nextFire = 0;
+let w;
+let s;
+let a;
+let d;
+let cursors;
 
 function initialize(_game) {
   game = _game;
@@ -48,32 +48,38 @@ function create() {
 }
 
 function update() {
-  if (player.body.velocity.x > 0)
-      player.body.acceleration.x = -300;
-  if (player.body.velocity.x < 0)
-      player.body.acceleration.x = 300;
-  if (player.body.velocity.y > 0)
-      player.body.acceleration.y = -300;
-  if (player.body.velocity.y < 0)
-      player.body.acceleration.y = 300;
+  if (player.body.velocity.x > 0) {
+    player.body.acceleration.x = -300;
+  }
+
+  if (player.body.velocity.x < 0) {
+    player.body.acceleration.x = 300;
+  }
+
+  if (player.body.velocity.y > 0){
+    player.body.acceleration.y = -300;
+  }
+
+  if (player.body.velocity.y < 0) {
+    player.body.acceleration.y = 300;
+  }
 
   player.body.maxVelocity.x = 200;
   player.body.maxVelocity.y = 200;
 
-  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown)
+  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown) {
     fire();
+  }
 
   if (a.isDown) {
-      player.body.acceleration.x = -500;
-  }
-  else if (d.isDown) {
-      player.body.acceleration.x = 500;
+    player.body.acceleration.x = -500;
+  } else if (d.isDown) {
+    player.body.acceleration.x = 500;
   }
   if (w.isDown) {
-      player.body.acceleration.y = -500;
-  }
-  else if (s.isDown) {
-      player.body.acceleration.y = 500;
+    player.body.acceleration.y = -500;
+  } else if (s.isDown) {
+    player.body.acceleration.y = 500;
   }
 }
 
@@ -100,7 +106,7 @@ function getBullets() {
 function fire() {
   if (game.time.now > nextFire && bullets.countDead() > 0) {
     nextFire = game.time.now + fireRate;
-    var bullet = bullets.getFirstDead();
+    const bullet = bullets.getFirstDead();
     bullet.reset(player.x, player.y);
     bullet.body.velocity.x = player.body.velocity.x;
     bullet.body.velocity.y = player.body.velocity.y;
@@ -111,28 +117,21 @@ function fire() {
   }
 }
 
-module.exports = {
-  initialize: initialize,
-  preload: preload,
-  create: create,
-  update: update,
-  getLevel: getLevel,
-  getHealth: getHealth,
-  getExp: getExp,
-  getPlayer: getPlayer,
-  getBullets: getBullets,
+export default {
+  initialize,
+  preload,
+  create,
+  update,
+  getLevel,
+  getHealth,
+  getExp,
+  getPlayer,
+  getBullets,
 };
 
-var Inventory = {
+const Inventory = {
   numApples: 0,
   numBananas: 0,
-}
+};
 
-Inventory.numApples += 1;    
-
-
-
-
-
-
-
+Inventory.numApples += 1;

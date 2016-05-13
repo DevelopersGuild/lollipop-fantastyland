@@ -1,0 +1,15 @@
+// Use this file as a starting point for your project's .eslintrc.
+// Copy this file, and add rule overrides as needed.
+{
+  "extends": "airbnb",
+  // TODO: Remove when Airbnb releases a new version of their Eslint config
+  "rules": {
+    "max-len": [2, 100, 2, {
+      "ignoreUrls": false,
+      "ignoreComments": false
+    }]
+  },
+  "globals": {
+    "Phaser": false
+  }
+}
