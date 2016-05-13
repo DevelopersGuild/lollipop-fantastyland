@@ -19,6 +19,7 @@ let levelUpText;
 // let rabbitHp;
 let fruit;
 let spaceKey;
+let dialogWindow;
 
 function preload() {
   // Modules
@@ -31,6 +32,7 @@ function preload() {
   game.load.tilemap('map', 'assets/grassland.json', null, Phaser.Tilemap.TILED_JSON);
   game.load.image('grass', 'assets/Tile Sets/grass.png');
   game.load.image('fruit', '/assets/peach.png');
+  game.load.image('dialogWindow', '/assets/dialog.png');
 }
 
 let map;
@@ -64,7 +66,7 @@ function create() {
   rabbit.animations.add('right', [6, 7, 8], 10, true);
   rabbit.animations.add('up', [9, 10, 11], 10, true);
 
-  fruit = game.add.sprite(300, 300, 'fruit');
+  fruit = game.add.sprite(300, 300, 'fruit');    
   game.physics.arcade.enable(fruit);
   fruit.body.collideWorldBounds = true;
   fruit.healingStrength = 25;
@@ -114,6 +116,7 @@ function destroyText(text) {
 }
 
 let dialogue;
+let dialogueText;
 function displayDialogue(player, _npc) {
   // player is knocked back
   game.physics.arcade.moveToObject(player, _npc, -200);
@@ -121,11 +124,26 @@ function displayDialogue(player, _npc) {
   dialogue = game.add.text(_npc.x, _npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
   destroyText(dialogue);
   setTimeout(() => {
-    dialogue = game.add.text(_npc.x, _npc.y - 18, 'What do you want to buy today?', { fontSize: '12px', fill: 'red' });
+    dialogue = game.add.text(_npc.x, _npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
     destroyText(dialogue);
   }, 2000);
+
+  // Pause game and add dialogue window
+  togglePause();
+  dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
+  dialogueText = game.add.text(180, 190, 'Duck: Welcome to the Weapons Store!');
+  dialogWindow.visible = true;
+  destroyText(dialogueText);
   setTimeout(() => {
-    dialogue = game.add.text(_npc.x, _npc.y - 18, 'Have a nice day!', { fontSize: '12px', fill: 'red' });
+  	dialogueText = game.add.text(200, 190, 'Duck: How can I help you today?');
+  	destroyText(dialogueText);}, 1500);
+  setTimeout(() => {
+  	dialogWindow.destroy();
+  	togglePause();}, 2500);
+
+
+  setTimeout(() => {
+    dialogue = game.add.text(_npc.x, _npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
     destroyText(dialogue);
   }, 4000);
 }
