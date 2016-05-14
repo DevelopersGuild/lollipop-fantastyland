@@ -41,6 +41,7 @@ const mainState = {
 
     // Modules
     playerModule.create();
+    this.player = playerModule.getPlayer();
 
     gunModule.initialize(game, playerModule.getPlayer());
     gunModule.create();
@@ -78,27 +79,26 @@ const mainState = {
     // Modules
     playerModule.update();
 
-    const player = playerModule.getPlayer();
-    game.physics.arcade.collide(player, this.foregroundLayer);
+    game.physics.arcade.collide(this.player, this.foregroundLayer);
     game.physics.arcade.collide(this.rabbit, this.foregroundLayer);
 
     if (game.time.now > this.rabbit.nextMove) {
-      game.physics.arcade.moveToObject(this.rabbit, player, 250);
-      if (this.rabbit.x > player.x + 30) this.rabbit.animations.play('left');
-      else if (this.rabbit.x < player.x - 30) this.rabbit.animations.play('right');
-      else if (this.rabbit.y > player.y) this.rabbit.animations.play('up');
+      game.physics.arcade.moveToObject(this.rabbit, this.player, 250);
+      if (this.rabbit.x > this.player.x + 30) this.rabbit.animations.play('left');
+      else if (this.rabbit.x < this.player.x - 30) this.rabbit.animations.play('right');
+      else if (this.rabbit.y > this.player.y) this.rabbit.animations.play('up');
       else this.rabbit.animations.play('down');
-    } else if (player.x > this.rabbit.x) this.rabbit.frame = 7;
-    else if (player.x < this.rabbit.x) this.rabbit.frame = 4;
+    } else if (this.player.x > this.rabbit.x) this.rabbit.frame = 7;
+    else if (this.player.x < this.rabbit.x) this.rabbit.frame = 4;
 
     // TEMP
     this.levelText.text = `Level: ${playerModule.getLevel()}`;
     this.healthText.text = `Health: ${playerModule.getHealth()}`;
     this.expText.text = `Exp: ${playerModule.getExp()}`;
 
-    game.physics.arcade.overlap(player, this.rabbit, this.killEnemy, null, this);
-    game.physics.arcade.overlap(player, this.fruit, this.pickUpFruit, null, this);
-    game.physics.arcade.overlap(player, this.npc, this.displayDialogue, null, this);
+    game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
+    game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
+    game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
     game.physics.arcade.overlap(playerModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
   },
   togglePause() {
@@ -109,14 +109,14 @@ const mainState = {
       text.destroy();
     }, 1000);
   },
-  displayDialogue(player, _npc) {
+  displayDialogue(player, npc) {
     // player is knocked back
-    game.physics.arcade.moveToObject(player, _npc, -200);
+    game.physics.arcade.moveToObject(player, npc, -200);
     // display dialogue
-    this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
+    this.dialogue = game.add.text(npc.x, npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
     this.destroyText(this.dialogue);
     setTimeout(() => {
-      this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
+      this.dialogue = game.add.text(npc.x, npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
       this.destroyText(this.dialogue);
     }, 2000);
 
@@ -137,16 +137,16 @@ const mainState = {
 
 
     setTimeout(() => {
-      this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
+      this.dialogue = game.add.text(npc.x, npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
       this.destroyText(this.dialogue);
     }, 4000);
   },
-  killEnemy(player, _rabbit) {
+  killEnemy(player, rabbit) {
     // stop the rabbit from approaching the player for the next 0.5 seconds
-    _rabbit.nextMove = game.time.now + 500;
+    rabbit.nextMove = game.time.now + 500;
     // player and rabbit are knocked back
-    game.physics.arcade.moveToObject(_rabbit, player, -100);
-    game.physics.arcade.moveToObject(player, _rabbit, -200);
+    game.physics.arcade.moveToObject(rabbit, player, -100);
+    game.physics.arcade.moveToObject(player, rabbit, -200);
     // deal damage to the player
 
     player.health--;
@@ -154,7 +154,7 @@ const mainState = {
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
     // Kill enemy if enemyHp is 0.
-    if (_rabbit.health === 0) {
+    if (rabbit.health === 0) {
       player.exp += 10;  // Increment exp value
       // Level up if exp reaches over 100.
       if (player.exp >= 100) {
@@ -164,9 +164,9 @@ const mainState = {
         this.destroyText(this.levelUpText);
       }
       // rabbit respawns when killed
-      _rabbit.x = Math.random() * 800;
-      _rabbit.y = Math.random() * 600;
-      _rabbit.health = 3;
+      rabbit.x = Math.random() * 800;
+      rabbit.y = Math.random() * 600;
+      rabbit.health = 3;
     }
     // if player's health is 0, the game is over
     if (player.health === 0) {
@@ -174,45 +174,44 @@ const mainState = {
       // gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
     }
   },
-  pickUpFruit(player, _fruit) {
-    player.health += _fruit.healingStrength;
+  pickUpFruit(player, fruit) {
+    player.health += fruit.healingStrength;
     if (player.health > 100) {
       player.health = 100;
     }
 
-    _fruit.kill();
+    fruit.kill();
   },
-  shootEnemy(_rabbit, bullet) {
+  shootEnemy(rabbit, bullet) {
     // kill the bullet
     bullet.kill();
     // deal damage to the rabbit
-    _rabbit.health--;
+    rabbit.health--;
     // show text when hit
-    this.hitText = game.add.text(_rabbit.x, _rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
+    this.hitText = game.add.text(rabbit.x, rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
-    const player = playerModule.getPlayer();
     // stop the rabbit from approaching the player for the next 0.1 seconds
-    _rabbit.nextMove = game.time.now + 100;
+    rabbit.nextMove = game.time.now + 100;
     // Kill enemy if enemyHp is 0.
-    if (_rabbit.health === 0) {
-      player.exp += 10;  // Increment exp value
+    if (rabbit.health === 0) {
+      this.player.exp += 10;  // Increment exp value
       // Level up if exp reaches over 100.
-      if (player.exp >= 100) {
-        player.level++;
-        player.exp = 0;
-        this.levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+      if (this.player.exp >= 100) {
+        this.player.level++;
+        this.player.exp = 0;
+        this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
         this.destroyText(this.levelUpText);
       }
       // rabbit respawns 1 second after killed
-      _rabbit.x = Math.random() * 800;
-      _rabbit.y = Math.random() * 600;
-      _rabbit.body.velocity.x = 0;
-      _rabbit.body.velocity.y = 0;
-      _rabbit.health = 3;
-      _rabbit.nextMove = game.time.now + 1000;
+      rabbit.x = Math.random() * 800;
+      rabbit.y = Math.random() * 600;
+      rabbit.body.velocity.x = 0;
+      rabbit.body.velocity.y = 0;
+      rabbit.health = 3;
+      rabbit.nextMove = game.time.now + 1000;
 
     // otherwise the rabbit is knocked back
-    } else game.physics.arcade.moveToObject(this.rabbit, player, -100);
+    } else game.physics.arcade.moveToObject(this.rabbit, this.player, -100);
   },
 };
 
