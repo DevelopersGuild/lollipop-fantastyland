@@ -7,25 +7,6 @@ window.Phaser = require('phaser/build/custom/phaser-split');
 
 const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 
-let healthText;
-// let manaText;
-let levelText;
-let expText;
-let rabbit;
-let npc;
-let hitText;
-let levelUpText;
-// let gameOverText;
-// let rabbitHp;
-let fruit;
-let spaceKey;
-let dialogWindow;
-
-let map;
-let backgroundLayer;
-let foregroundLayer;
-let topLayer;
-
 const mainState = {
   preload() {
     // Modules
@@ -40,24 +21,23 @@ const mainState = {
     game.load.image('tree', 'assets/tilesets/tree2-final.png');
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
-
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     // Map
-    map = game.add.tilemap('map');
-    map.addTilesetImage('grass-tiles-2-small', 'grass');
-    map.addTilesetImage('tree2-final', 'tree');
+    this.map = game.add.tilemap('map');
+    this.map.addTilesetImage('grass-tiles-2-small', 'grass');
+    this.map.addTilesetImage('tree2-final', 'tree');
 
-    backgroundLayer = map.createLayer('Background');
-    foregroundLayer = map.createLayer('Foreground');
+    this.backgroundLayer = this.map.createLayer('Background');
+    this.foregroundLayer = this.map.createLayer('Foreground');
     // map.setCollisionBetween(54, 83);
 
-    backgroundLayer.resizeWorld();
-    foregroundLayer.resizeWorld();
-    game.physics.arcade.enable(foregroundLayer);
+    this.backgroundLayer.resizeWorld();
+    this.foregroundLayer.resizeWorld();
+    game.physics.arcade.enable(this.foregroundLayer);
 
-    map.setCollisionByExclusion([], true, foregroundLayer);
+    this.map.setCollisionByExclusion([], true, this.foregroundLayer);
 
     // Modules
     playerModule.create();
@@ -66,181 +46,175 @@ const mainState = {
     gunModule.create();
 
 
-    levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
-    healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
+    this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
+    this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
     // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
-    expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
-    rabbit = game.add.sprite(200, 200, 'rabbit');
-    game.physics.arcade.enable(rabbit);
-    rabbit.body.collideWorldBounds = true;
-    rabbit.health = 3;
-    rabbit.nextMove = 0;
-    rabbit.animations.add('down', [0, 1, 2], 10, true);
-    rabbit.animations.add('left', [3, 4, 5], 10, true);
-    rabbit.animations.add('right', [6, 7, 8], 10, true);
-    rabbit.animations.add('up', [9, 10, 11], 10, true);
+    this.expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
+    this.rabbit = game.add.sprite(200, 200, 'rabbit');
+    game.physics.arcade.enable(this.rabbit);
+    this.rabbit.body.collideWorldBounds = true;
+    this.rabbit.health = 3;
+    this.rabbit.nextMove = 0;
+    this.rabbit.animations.add('down', [0, 1, 2], 10, true);
+    this.rabbit.animations.add('left', [3, 4, 5], 10, true);
+    this.rabbit.animations.add('right', [6, 7, 8], 10, true);
+    this.rabbit.animations.add('up', [9, 10, 11], 10, true);
 
-    fruit = game.add.sprite(300, 300, 'fruit');
-    game.physics.arcade.enable(fruit);
-    fruit.body.collideWorldBounds = true;
-    fruit.healingStrength = 25;
-    npc = game.add.sprite(100, 400, 'npc');
-    game.physics.arcade.enable(npc);
-    npc.animations.add('walk');
-    npc.animations.play('walk', 5, true);
-    npc.collideWorldBounds = true;
-    spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    spaceKey.onDown.add(togglePause, this);
-    topLayer = map.createLayer('Top');
-    topLayer.resizeWorld();
+    this.fruit = game.add.sprite(300, 300, 'fruit');
+    game.physics.arcade.enable(this.fruit);
+    this.fruit.body.collideWorldBounds = true;
+    this.fruit.healingStrength = 25;
+    this.npc = game.add.sprite(100, 400, 'npc');
+    game.physics.arcade.enable(this.npc);
+    this.npc.animations.add('walk');
+    this.npc.animations.play('walk', 5, true);
+    this.npc.collideWorldBounds = true;
+    this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    this.spaceKey.onDown.add(this.togglePause, this);
+    this.topLayer = this.map.createLayer('Top');
+    this.topLayer.resizeWorld();
   },
   update() {
     // Modules
     playerModule.update();
 
     const player = playerModule.getPlayer();
-    game.physics.arcade.collide(player, foregroundLayer);
-    game.physics.arcade.collide(rabbit, foregroundLayer);
+    game.physics.arcade.collide(player, this.foregroundLayer);
+    game.physics.arcade.collide(this.rabbit, this.foregroundLayer);
 
-    if (game.time.now > rabbit.nextMove) {
-      game.physics.arcade.moveToObject(rabbit, player, 250);
-      if (rabbit.x > player.x + 30) rabbit.animations.play('left');
-      else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
-      else if (rabbit.y > player.y) rabbit.animations.play('up');
-      else rabbit.animations.play('down');
-    } else if (player.x > rabbit.x) rabbit.frame = 7;
-    else if (player.x < rabbit.x) rabbit.frame = 4;
+    if (game.time.now > this.rabbit.nextMove) {
+      game.physics.arcade.moveToObject(this.rabbit, player, 250);
+      if (this.rabbit.x > player.x + 30) this.rabbit.animations.play('left');
+      else if (this.rabbit.x < player.x - 30) this.rabbit.animations.play('right');
+      else if (this.rabbit.y > player.y) this.rabbit.animations.play('up');
+      else this.rabbit.animations.play('down');
+    } else if (player.x > this.rabbit.x) this.rabbit.frame = 7;
+    else if (player.x < this.rabbit.x) this.rabbit.frame = 4;
 
     // TEMP
-    levelText.text = `Level: ${playerModule.getLevel()}`;
-    healthText.text = `Health: ${playerModule.getHealth()}`;
-    expText.text = `Exp: ${playerModule.getExp()}`;
+    this.levelText.text = `Level: ${playerModule.getLevel()}`;
+    this.healthText.text = `Health: ${playerModule.getHealth()}`;
+    this.expText.text = `Exp: ${playerModule.getExp()}`;
 
-    game.physics.arcade.overlap(player, rabbit, killEnemy, null, this);
-    game.physics.arcade.overlap(player, fruit, pickUpFruit, null, this);
-    game.physics.arcade.overlap(player, npc, displayDialogue, null, this);
-    game.physics.arcade.overlap(playerModule.getBullets(), rabbit, shootEnemy, null, this);
+    game.physics.arcade.overlap(player, this.rabbit, this.killEnemy, null, this);
+    game.physics.arcade.overlap(player, this.fruit, this.pickUpFruit, null, this);
+    game.physics.arcade.overlap(player, this.npc, this.displayDialogue, null, this);
+    game.physics.arcade.overlap(playerModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
+  },
+  togglePause() {
+    game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
+  },
+  destroyText(text) {
+    setTimeout(() => {
+      text.destroy();
+    }, 1000);
+  },
+  displayDialogue(player, _npc) {
+    // player is knocked back
+    game.physics.arcade.moveToObject(player, _npc, -200);
+    // display dialogue
+    this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
+    this.destroyText(this.dialogue);
+    setTimeout(() => {
+      this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
+      this.destroyText(this.dialogue);
+    }, 2000);
+
+    // Pause game and add dialogue window
+    this.togglePause();
+    this.dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
+    this.dialogueText = game.add.text(180, 190, 'Duck: Welcome to the Weapons Store!');
+    this.dialogWindow.visible = true;
+    this.destroyText(this.dialogueText);
+    setTimeout(() => {
+      this.dialogueText = game.add.text(200, 190, 'Duck: How can I help you today?');
+      this.destroyText(this.dialogueText);
+    }, 1500);
+    setTimeout(() => {
+      this.dialogWindow.destroy();
+      this.togglePause();
+    }, 2500);
+
+
+    setTimeout(() => {
+      this.dialogue = game.add.text(_npc.x, _npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
+      this.destroyText(this.dialogue);
+    }, 4000);
+  },
+  killEnemy(player, _rabbit) {
+    // stop the rabbit from approaching the player for the next 0.5 seconds
+    _rabbit.nextMove = game.time.now + 500;
+    // player and rabbit are knocked back
+    game.physics.arcade.moveToObject(_rabbit, player, -100);
+    game.physics.arcade.moveToObject(player, _rabbit, -200);
+    // deal damage to the player
+
+    player.health--;
+    // show text when hit
+    this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
+    this.destroyText(this.hitText);
+    // Kill enemy if enemyHp is 0.
+    if (_rabbit.health === 0) {
+      player.exp += 10;  // Increment exp value
+      // Level up if exp reaches over 100.
+      if (player.exp >= 100) {
+        player.level++;
+        player.exp = 0;
+        this.levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+        this.destroyText(this.levelUpText);
+      }
+      // rabbit respawns when killed
+      _rabbit.x = Math.random() * 800;
+      _rabbit.y = Math.random() * 600;
+      _rabbit.health = 3;
+    }
+    // if player's health is 0, the game is over
+    if (player.health === 0) {
+      player.kill();
+      // gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+    }
+  },
+  pickUpFruit(player, _fruit) {
+    player.health += _fruit.healingStrength;
+    if (player.health > 100) {
+      player.health = 100;
+    }
+
+    _fruit.kill();
+  },
+  shootEnemy(_rabbit, bullet) {
+    // kill the bullet
+    bullet.kill();
+    // deal damage to the rabbit
+    _rabbit.health--;
+    // show text when hit
+    this.hitText = game.add.text(_rabbit.x, _rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
+    this.destroyText(this.hitText);
+    const player = playerModule.getPlayer();
+    // stop the rabbit from approaching the player for the next 0.1 seconds
+    _rabbit.nextMove = game.time.now + 100;
+    // Kill enemy if enemyHp is 0.
+    if (_rabbit.health === 0) {
+      player.exp += 10;  // Increment exp value
+      // Level up if exp reaches over 100.
+      if (player.exp >= 100) {
+        player.level++;
+        player.exp = 0;
+        this.levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+        this.destroyText(this.levelUpText);
+      }
+      // rabbit respawns 1 second after killed
+      _rabbit.x = Math.random() * 800;
+      _rabbit.y = Math.random() * 600;
+      _rabbit.body.velocity.x = 0;
+      _rabbit.body.velocity.y = 0;
+      _rabbit.health = 3;
+      _rabbit.nextMove = game.time.now + 1000;
+
+    // otherwise the rabbit is knocked back
+    } else game.physics.arcade.moveToObject(this.rabbit, player, -100);
   },
 };
-
-function togglePause() {
-  game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
-}
-
-function destroyText(text) {
-  setTimeout(() => {
-    text.destroy();
-  }, 1000);
-}
-
-let dialogue;
-let dialogueText;
-function displayDialogue(player, _npc) {
-  // player is knocked back
-  game.physics.arcade.moveToObject(player, _npc, -200);
-  // display dialogue
-  dialogue = game.add.text(_npc.x, _npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
-  destroyText(dialogue);
-  setTimeout(() => {
-    dialogue = game.add.text(_npc.x, _npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
-    destroyText(dialogue);
-  }, 2000);
-
-  // Pause game and add dialogue window
-  togglePause();
-  dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
-  dialogueText = game.add.text(180, 190, 'Duck: Welcome to the Weapons Store!');
-  dialogWindow.visible = true;
-  destroyText(dialogueText);
-  setTimeout(() => {
-  	dialogueText = game.add.text(200, 190, 'Duck: How can I help you today?');
-  	destroyText(dialogueText);}, 1500);
-  setTimeout(() => {
-  	dialogWindow.destroy();
-  	togglePause();}, 2500);
-
-
-  setTimeout(() => {
-    dialogue = game.add.text(_npc.x, _npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
-    destroyText(dialogue);
-  }, 4000);
-}
-
-function killEnemy(player, _rabbit) {
-  // stop the rabbit from approaching the player for the next 0.5 seconds
-  _rabbit.nextMove = game.time.now + 500;
-  // player and rabbit are knocked back
-  game.physics.arcade.moveToObject(_rabbit, player, -100);
-  game.physics.arcade.moveToObject(player, _rabbit, -200);
-  // deal damage to the player
-
-  player.health--;
-  // show text when hit
-  hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
-  destroyText(hitText);
-  // Kill enemy if enemyHp is 0.
-  if (_rabbit.health === 0) {
-    player.exp += 10;  // Increment exp value
-    // Level up if exp reaches over 100.
-    if (player.exp >= 100) {
-      player.level++;
-      player.exp = 0;
-      levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-      destroyText(levelUpText);
-    }
-    // rabbit respawns when killed
-    _rabbit.x = Math.random() * 800;
-    _rabbit.y = Math.random() * 600;
-    _rabbit.health = 3;
-  }
-  // if player's health is 0, the game is over
-  if (player.health === 0) {
-    player.kill();
-    // gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
-  }
-}
-
-function pickUpFruit(player, _fruit) {
-  player.health += fruit.healingStrength;
-  if (player.health > 100) {
-    player.health = 100;
-  }
-
-  _fruit.kill();
-}
-
-function shootEnemy(_rabbit, bullet) {
-  // kill the bullet
-  bullet.kill();
-  // deal damage to the rabbit
-  _rabbit.health--;
-  // show text when hit
-  hitText = game.add.text(_rabbit.x, _rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
-  destroyText(hitText);
-  const player = playerModule.getPlayer();
-  // stop the rabbit from approaching the player for the next 0.1 seconds
-  _rabbit.nextMove = game.time.now + 100;
-  // Kill enemy if enemyHp is 0.
-  if (_rabbit.health === 0) {
-    player.exp += 10;  // Increment exp value
-    // Level up if exp reaches over 100.
-    if (player.exp >= 100) {
-      player.level++;
-      player.exp = 0;
-      levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-      destroyText(levelUpText);
-    }
-    // rabbit respawns 1 second after killed
-    _rabbit.x = Math.random() * 800;
-    _rabbit.y = Math.random() * 600;
-    _rabbit.body.velocity.x = 0;
-    _rabbit.body.velocity.y = 0;
-    _rabbit.health = 3;
-    _rabbit.nextMove = game.time.now + 1000;
-
-  // otherwise the rabbit is knocked back
-  } else game.physics.arcade.moveToObject(rabbit, player, -100);
-}
 
 game.state.add('main', mainState);
 game.state.start('main');
