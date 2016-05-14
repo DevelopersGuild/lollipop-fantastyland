@@ -1,137 +1,115 @@
-let game;
-let player;
-let bullets;
-const fireRate = 200;
-let nextFire = 0;
-let w;
-let s;
-let a;
-let d;
-let cursors;
 
-function initialize(_game) {
-  game = _game;
-}
+const module = {
+  initialize(game) {
+    this.game = game;
+  },
 
-function preload() {
-  game.load.spritesheet('player', '/assets/player.png', 32, 16);
-  game.load.image('bullet', '/assets/bullet.png');
-}
+  preload() {
+    this.game.load.spritesheet('player', '/assets/player.png', 32, 16);
+    this.game.load.image('bullet', '/assets/bullet.png');
+  },
 
-function create() {
-  player = game.add.sprite(500, 200, 'player');
-  game.physics.arcade.enable(player);
-  player.anchor.setTo(0.5, 0.5);
-  player.body.collideWorldBounds = true;
-  player.body.allowRotation = false;
+  create() {
+    this.player = this.game.add.sprite(500, 200, 'player');
+    this.game.physics.arcade.enable(this.player);
+    this.player.anchor.setTo(0.5, 0.5);
+    this.player.body.collideWorldBounds = true;
+    this.player.body.allowRotation = false;
 
-  bullets = game.add.group();
-  bullets.enableBody = true;
-  bullets.createMultiple(50, 'bullet');
-  bullets.setAll('checkWorldBounds', true);
-  bullets.setAll('outOfBoundsKill', true);
+    this.bullets = this.game.add.group();
+    this.bullets.enableBody = true;
+    this.bullets.createMultiple(50, 'bullet');
+    this.bullets.setAll('checkWorldBounds', true);
+    this.bullets.setAll('outOfBoundsKill', true);
 
-  w = game.input.keyboard.addKey(Phaser.Keyboard.W);
-  a = game.input.keyboard.addKey(Phaser.Keyboard.A);
-  s = game.input.keyboard.addKey(Phaser.Keyboard.S);
-  d = game.input.keyboard.addKey(Phaser.Keyboard.D);
-  cursors = game.input.keyboard.createCursorKeys();
+    this.w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+    this.a = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.s = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+    this.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.cursors = this.game.input.keyboard.createCursorKeys();
 
-  // Initialize Level
-  player.level = 1;
+    // Initialize Level
+    this.player.level = 1;
 
-  // Initialize Health
-  player.health = 100;
+    // Initialize Health
+    this.player.health = 100;
 
-  // Initialize EXP
-  player.exp = 0;
-}
+    // Initialize EXP
+    this.player.exp = 0;
 
-function update() {
-  if (player.body.velocity.x > 0) {
-    player.body.acceleration.x = -300;
-  }
+    this.fireRate = 200;
+    this.nextFire = 0;
+  },
 
-  if (player.body.velocity.x < 0) {
-    player.body.acceleration.x = 300;
-  }
+  update() {
+    if (this.player.body.velocity.x > 0) {
+      this.player.body.acceleration.x = -300;
+    }
 
-  if (player.body.velocity.y > 0) {
-    player.body.acceleration.y = -300;
-  }
+    if (this.player.body.velocity.x < 0) {
+      this.player.body.acceleration.x = 300;
+    }
 
-  if (player.body.velocity.y < 0) {
-    player.body.acceleration.y = 300;
-  }
+    if (this.player.body.velocity.y > 0) {
+      this.player.body.acceleration.y = -300;
+    }
 
-  player.body.maxVelocity.x = 200;
-  player.body.maxVelocity.y = 200;
+    if (this.player.body.velocity.y < 0) {
+      this.player.body.acceleration.y = 300;
+    }
 
-  if (cursors.up.isDown || cursors.right.isDown || cursors.left.isDown || cursors.down.isDown) {
-    fire();
-  }
+    this.player.body.maxVelocity.x = 200;
+    this.player.body.maxVelocity.y = 200;
 
-  if (a.isDown) {
-    player.body.acceleration.x = -500;
-  } else if (d.isDown) {
-    player.body.acceleration.x = 500;
-  }
-  if (w.isDown) {
-    player.body.acceleration.y = -500;
-  } else if (s.isDown) {
-    player.body.acceleration.y = 500;
-  }
-}
+    if (this.cursors.up.isDown || this.cursors.right.isDown || this.cursors.left.isDown || this.cursors.down.isDown) {
+      this.fire();
+    }
 
-function getLevel() {
-  return player.level;
-}
+    if (this.a.isDown) {
+      this.player.body.acceleration.x = -500;
+    } else if (this.d.isDown) {
+      this.player.body.acceleration.x = 500;
+    }
+    if (this.w.isDown) {
+      this.player.body.acceleration.y = -500;
+    } else if (this.s.isDown) {
+      this.player.body.acceleration.y = 500;
+    }
+  },
 
-function getHealth() {
-  return player.health;
-}
+  getLevel() {
+    return this.player.level;
+  },
 
-function getExp() {
-  return player.exp;
-}
+  getHealth() {
+    return this.player.health;
+  },
 
-function getPlayer() {
-  return player;
-}
+  getExp() {
+    return this.player.exp;
+  },
 
-function getBullets() {
-  return bullets;
-}
+  getPlayer() {
+    return this.player;
+  },
 
-function fire() {
-  if (game.time.now > nextFire && bullets.countDead() > 0) {
-    nextFire = game.time.now + fireRate;
-    const bullet = bullets.getFirstDead();
-    bullet.reset(player.x, player.y);
-    bullet.body.velocity.x = player.body.velocity.x;
-    bullet.body.velocity.y = player.body.velocity.y;
-    if (cursors.left.isDown) bullet.body.velocity.x -= 500;
-    else if (cursors.right.isDown) bullet.body.velocity.x += 500;
-    if (cursors.up.isDown) bullet.body.velocity.y -= 500;
-    else if (cursors.down.isDown) bullet.body.velocity.y += 500;
-  }
-}
+  getBullets() {
+    return this.bullets;
+  },
 
-export default {
-  initialize,
-  preload,
-  create,
-  update,
-  getLevel,
-  getHealth,
-  getExp,
-  getPlayer,
-  getBullets,
+  fire() {
+    if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0) {
+      this.nextFire = this.game.time.now + this.fireRate;
+      const bullet = this.bullets.getFirstDead();
+      bullet.reset(this.player.x, this.player.y);
+      bullet.body.velocity.x = this.player.body.velocity.x;
+      bullet.body.velocity.y = this.player.body.velocity.y;
+      if (this.cursors.left.isDown) bullet.body.velocity.x -= 500;
+      else if (this.cursors.right.isDown) bullet.body.velocity.x += 500;
+      if (this.cursors.up.isDown) bullet.body.velocity.y -= 500;
+      else if (this.cursors.down.isDown) bullet.body.velocity.y += 500;
+    }
+  },
 };
 
-const Inventory = {
-  numApples: 0,
-  numBananas: 0,
-};
-
-Inventory.numApples += 1;
+export default module;
