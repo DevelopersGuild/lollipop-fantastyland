@@ -5,7 +5,7 @@ window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
 
-const game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload, create, update });
+const game = new Phaser.Game(800, 640, Phaser.AUTO, '', { preload, create, update });
 
 let healthText;
 // let manaText;
@@ -29,21 +29,33 @@ function preload() {
 
   game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
   game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
-  game.load.tilemap('map', 'assets/grassland.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.image('grass', 'assets/Tile Sets/grass.png');
+  game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
+  game.load.image('grass', 'assets/tilesets/grass-tiles-2-small.png');
+  game.load.image('tree', 'assets/tilesets/tree2-final.png');
   game.load.image('fruit', '/assets/peach.png');
   game.load.image('dialogWindow', '/assets/dialog.png');
 }
 
 let map;
-// let layer;
+let backgroundLayer;
+let foregroundLayer;
+let topLayer;
 function create() {
+  game.physics.startSystem(Phaser.Physics.ARCADE);
   // Map
   map = game.add.tilemap('map');
-  map.addTilesetImage('grass');
-  // layer = map.createLayer('BackgroundLayer', 800, 600);
-  map.createLayer('BackgroundLayer', 800, 600);
-  // layer.resizeWorld();
+  map.addTilesetImage('grass-tiles-2-small', 'grass');
+  map.addTilesetImage('tree2-final', 'tree');
+
+  backgroundLayer = map.createLayer('Background');
+  foregroundLayer = map.createLayer('Foreground');
+  // map.setCollisionBetween(54, 83);
+
+  backgroundLayer.resizeWorld();
+  foregroundLayer.resizeWorld();
+  game.physics.arcade.enable(foregroundLayer);
+
+  map.setCollisionByExclusion([], true, foregroundLayer);
 
   // Modules
   playerModule.create();
@@ -77,6 +89,8 @@ function create() {
   npc.collideWorldBounds = true;
   spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   spaceKey.onDown.add(togglePause, this);
+  topLayer = map.createLayer('Top');
+  topLayer.resizeWorld();
 }
 
 function togglePause() {
@@ -88,6 +102,9 @@ function update() {
   playerModule.update();
 
   const player = playerModule.getPlayer();
+  game.physics.arcade.collide(player, foregroundLayer);
+  game.physics.arcade.collide(rabbit, foregroundLayer);
+
   if (game.time.now > rabbit.nextMove) {
     game.physics.arcade.moveToObject(rabbit, player, 250);
     if (rabbit.x > player.x + 30) rabbit.animations.play('left');
