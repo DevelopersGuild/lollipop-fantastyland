@@ -5,7 +5,7 @@ window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
 
-const game = new Phaser.Game(800, 640, Phaser.AUTO, '', { preload, create, update });
+const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 
 let healthText;
 // let manaText;
@@ -21,110 +21,111 @@ let fruit;
 let spaceKey;
 let dialogWindow;
 
-function preload() {
-  // Modules
-  playerModule.initialize(game);
-  playerModule.preload(game);
-  gunModule.preload(game);
-
-  game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
-  game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
-  game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
-  game.load.image('grass', 'assets/tilesets/grass-tiles-2-small.png');
-  game.load.image('tree', 'assets/tilesets/tree2-final.png');
-  game.load.image('fruit', '/assets/peach.png');
-  game.load.image('dialogWindow', '/assets/dialog.png');
-}
-
 let map;
 let backgroundLayer;
 let foregroundLayer;
 let topLayer;
-function create() {
-  game.physics.startSystem(Phaser.Physics.ARCADE);
-  // Map
-  map = game.add.tilemap('map');
-  map.addTilesetImage('grass-tiles-2-small', 'grass');
-  map.addTilesetImage('tree2-final', 'tree');
 
-  backgroundLayer = map.createLayer('Background');
-  foregroundLayer = map.createLayer('Foreground');
-  // map.setCollisionBetween(54, 83);
+const mainState = {
+  preload() {
+    // Modules
+    playerModule.initialize(game);
+    playerModule.preload(game);
+    gunModule.preload(game);
 
-  backgroundLayer.resizeWorld();
-  foregroundLayer.resizeWorld();
-  game.physics.arcade.enable(foregroundLayer);
+    game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
+    game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
+    game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('grass', 'assets/tilesets/grass-tiles-2-small.png');
+    game.load.image('tree', 'assets/tilesets/tree2-final.png');
+    game.load.image('fruit', '/assets/peach.png');
+    game.load.image('dialogWindow', '/assets/dialog.png');
 
-  map.setCollisionByExclusion([], true, foregroundLayer);
+  },
+  create() {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    // Map
+    map = game.add.tilemap('map');
+    map.addTilesetImage('grass-tiles-2-small', 'grass');
+    map.addTilesetImage('tree2-final', 'tree');
 
-  // Modules
-  playerModule.create();
+    backgroundLayer = map.createLayer('Background');
+    foregroundLayer = map.createLayer('Foreground');
+    // map.setCollisionBetween(54, 83);
 
-  gunModule.initialize(game, playerModule.getPlayer());
-  gunModule.create();
+    backgroundLayer.resizeWorld();
+    foregroundLayer.resizeWorld();
+    game.physics.arcade.enable(foregroundLayer);
+
+    map.setCollisionByExclusion([], true, foregroundLayer);
+
+    // Modules
+    playerModule.create();
+
+    gunModule.initialize(game, playerModule.getPlayer());
+    gunModule.create();
 
 
-  levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
-  healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
-  // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
-  expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
-  rabbit = game.add.sprite(200, 200, 'rabbit');
-  game.physics.arcade.enable(rabbit);
-  rabbit.body.collideWorldBounds = true;
-  rabbit.health = 3;
-  rabbit.nextMove = 0;
-  rabbit.animations.add('down', [0, 1, 2], 10, true);
-  rabbit.animations.add('left', [3, 4, 5], 10, true);
-  rabbit.animations.add('right', [6, 7, 8], 10, true);
-  rabbit.animations.add('up', [9, 10, 11], 10, true);
+    levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
+    healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
+    // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
+    expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
+    rabbit = game.add.sprite(200, 200, 'rabbit');
+    game.physics.arcade.enable(rabbit);
+    rabbit.body.collideWorldBounds = true;
+    rabbit.health = 3;
+    rabbit.nextMove = 0;
+    rabbit.animations.add('down', [0, 1, 2], 10, true);
+    rabbit.animations.add('left', [3, 4, 5], 10, true);
+    rabbit.animations.add('right', [6, 7, 8], 10, true);
+    rabbit.animations.add('up', [9, 10, 11], 10, true);
 
-  fruit = game.add.sprite(300, 300, 'fruit');    
-  game.physics.arcade.enable(fruit);
-  fruit.body.collideWorldBounds = true;
-  fruit.healingStrength = 25;
-  npc = game.add.sprite(100, 400, 'npc');
-  game.physics.arcade.enable(npc);
-  npc.animations.add('walk');
-  npc.animations.play('walk', 5, true);
-  npc.collideWorldBounds = true;
-  spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-  spaceKey.onDown.add(togglePause, this);
-  topLayer = map.createLayer('Top');
-  topLayer.resizeWorld();
-}
+    fruit = game.add.sprite(300, 300, 'fruit');
+    game.physics.arcade.enable(fruit);
+    fruit.body.collideWorldBounds = true;
+    fruit.healingStrength = 25;
+    npc = game.add.sprite(100, 400, 'npc');
+    game.physics.arcade.enable(npc);
+    npc.animations.add('walk');
+    npc.animations.play('walk', 5, true);
+    npc.collideWorldBounds = true;
+    spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+    spaceKey.onDown.add(togglePause, this);
+    topLayer = map.createLayer('Top');
+    topLayer.resizeWorld();
+  },
+  update() {
+    // Modules
+    playerModule.update();
+
+    const player = playerModule.getPlayer();
+    game.physics.arcade.collide(player, foregroundLayer);
+    game.physics.arcade.collide(rabbit, foregroundLayer);
+
+    if (game.time.now > rabbit.nextMove) {
+      game.physics.arcade.moveToObject(rabbit, player, 250);
+      if (rabbit.x > player.x + 30) rabbit.animations.play('left');
+      else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
+      else if (rabbit.y > player.y) rabbit.animations.play('up');
+      else rabbit.animations.play('down');
+    } else if (player.x > rabbit.x) rabbit.frame = 7;
+    else if (player.x < rabbit.x) rabbit.frame = 4;
+
+    // TEMP
+    levelText.text = `Level: ${playerModule.getLevel()}`;
+    healthText.text = `Health: ${playerModule.getHealth()}`;
+    expText.text = `Exp: ${playerModule.getExp()}`;
+
+    game.physics.arcade.overlap(player, rabbit, killEnemy, null, this);
+    game.physics.arcade.overlap(player, fruit, pickUpFruit, null, this);
+    game.physics.arcade.overlap(player, npc, displayDialogue, null, this);
+    game.physics.arcade.overlap(playerModule.getBullets(), rabbit, shootEnemy, null, this);
+  },
+};
 
 function togglePause() {
   game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
 }
-
-function update() {
-  // Modules
-  playerModule.update();
-
-  const player = playerModule.getPlayer();
-  game.physics.arcade.collide(player, foregroundLayer);
-  game.physics.arcade.collide(rabbit, foregroundLayer);
-
-  if (game.time.now > rabbit.nextMove) {
-    game.physics.arcade.moveToObject(rabbit, player, 250);
-    if (rabbit.x > player.x + 30) rabbit.animations.play('left');
-    else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
-    else if (rabbit.y > player.y) rabbit.animations.play('up');
-    else rabbit.animations.play('down');
-  } else if (player.x > rabbit.x) rabbit.frame = 7;
-  else if (player.x < rabbit.x) rabbit.frame = 4;
-
-  // TEMP
-  levelText.text = `Level: ${playerModule.getLevel()}`;
-  healthText.text = `Health: ${playerModule.getHealth()}`;
-  expText.text = `Exp: ${playerModule.getExp()}`;
-
-  game.physics.arcade.overlap(player, rabbit, killEnemy, null, this);
-  game.physics.arcade.overlap(player, fruit, pickUpFruit, null, this);
-  game.physics.arcade.overlap(player, npc, displayDialogue, null, this);
-  game.physics.arcade.overlap(playerModule.getBullets(), rabbit, shootEnemy, null, this);
-}
-
 
 function destroyText(text) {
   setTimeout(() => {
@@ -240,3 +241,6 @@ function shootEnemy(_rabbit, bullet) {
   // otherwise the rabbit is knocked back
   } else game.physics.arcade.moveToObject(rabbit, player, -100);
 }
+
+game.state.add('main', mainState);
+game.state.start('main');
