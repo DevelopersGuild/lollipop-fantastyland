@@ -1,3 +1,4 @@
+import levelModule from './modules/level';
 import playerModule from './modules/player';
 import gunModule from './modules/gun';
 
@@ -14,34 +15,20 @@ const mainState = {
     playerModule.preload(game);
     gunModule.preload(game);
 
+    levelModule.preload(game);
+
     game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
     game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
     game.load.spritesheet('slime', '/assets/slime.png', 32, 32);
     game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
-    game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('grass', 'assets/tilesets/grass-tiles-2-small.png');
-    game.load.image('tree', 'assets/tilesets/tree2-final.png');
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    // Map
-    this.map = game.add.tilemap('map');
-    this.map.addTilesetImage('grass-tiles-2-small', 'grass');
-    this.map.addTilesetImage('tree2-final', 'tree');
-
-    this.backgroundLayer = this.map.createLayer('Background');
-    this.foregroundLayer = this.map.createLayer('Foreground');
-    // map.setCollisionBetween(54, 83);
-
-    this.backgroundLayer.resizeWorld();
-    this.foregroundLayer.resizeWorld();
-    game.physics.arcade.enable(this.foregroundLayer);
-
-    this.map.setCollisionByExclusion([], true, this.foregroundLayer);
 
     // Modules
+    levelModule.create();
     playerModule.create();
     this.player = playerModule.getPlayer();
 
@@ -85,15 +72,15 @@ const mainState = {
     this.npc.collideWorldBounds = true;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.spaceKey.onDown.add(this.togglePause, this);
-    this.topLayer = this.map.createLayer('Top');
-    this.topLayer.resizeWorld();
+
+    // NOTE: Keep this at the bottom of this function!
+    levelModule.createTopLayer();
   },
   update() {
     // Modules
     playerModule.update();
 
-    game.physics.arcade.collide(this.player, this.foregroundLayer);
-    game.physics.arcade.collide(this.rabbit, this.foregroundLayer);
+    levelModule.update(this.player, this.rabbit);
 
     if (game.time.now > this.rabbit.nextMove) {
       game.physics.arcade.moveToObject(this.rabbit, this.player, 200);
