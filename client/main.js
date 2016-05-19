@@ -63,6 +63,17 @@ const mainState = {
     this.rabbit.animations.add('right', [6, 7, 8], 10, true);
     this.rabbit.animations.add('up', [9, 10, 11], 10, true);
 
+    this.slime = game.add.sprite(500, 400, 'slime');
+    game.physics.arcade.enable(this.slime);
+    this.slime.body.collideWorldBounds = true;
+    this.slime.health = 3;
+    this.slime.nextShoot = 0;
+    this.slime.animations.add('move', [2, 3], 5, true);
+    this.slime.animations.add('shoot', [4, 5], 5, true);
+    this.projectile = game.add.sprite(-10, -10, 'projectile');
+    game.physics.arcade.enable(this.projectile);
+    this.projectile.animations.add('move', [0, 1, 2], 3, true);
+
     this.fruit = game.add.sprite(300, 300, 'fruit');
     game.physics.arcade.enable(this.fruit);
     this.fruit.body.collideWorldBounds = true;
@@ -76,17 +87,6 @@ const mainState = {
     this.spaceKey.onDown.add(this.togglePause, this);
     this.topLayer = this.map.createLayer('Top');
     this.topLayer.resizeWorld();
-
-    this.slime = game.add.sprite(500, 400, 'slime');
-    game.physics.arcade.enable(this.slime);
-    this.slime.body.collideWorldBounds = true;
-    this.slime.health = 3;
-    this.slime.nextShoot = 0;
-    this.slime.animations.add('move', [2, 3], 5, true);
-    this.slime.animations.add('shoot', [4, 5], 5, true);
-    this.projectile = game.add.sprite(-10, -10, 'projectile');
-    game.physics.arcade.enable(this.projectile);
-    this.projectile.animations.add('move', [0, 1, 2], 3, true);
   },
   update() {
     // Modules
