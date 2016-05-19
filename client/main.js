@@ -73,14 +73,13 @@ const mainState = {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.spaceKey.onDown.add(this.togglePause, this);
 
-    // NOTE: Keep this at the bottom of this function!
+    // README: Keep this at the bottom of this function!
     levelModule.createTopLayer();
   },
   update() {
     // Modules
     playerModule.update();
-
-    levelModule.update(this.player, this.rabbit);
+    levelModule.update(this.player, this.rabbit, this.slime);
 
     if (game.time.now > this.rabbit.nextMove) {
       game.physics.arcade.moveToObject(this.rabbit, this.player, 200);
