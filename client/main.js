@@ -16,6 +16,8 @@ const mainState = {
 
     game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
     game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
+    game.load.spritesheet('slime', '/assets/slime.png', 32, 32);
+    game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
     game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('grass', 'assets/tilesets/grass-tiles-2-small.png');
     game.load.image('tree', 'assets/tilesets/tree2-final.png');
@@ -74,6 +76,17 @@ const mainState = {
     this.spaceKey.onDown.add(this.togglePause, this);
     this.topLayer = this.map.createLayer('Top');
     this.topLayer.resizeWorld();
+
+    this.slime = game.add.sprite(500, 400, 'slime');
+    game.physics.arcade.enable(this.slime);
+    this.slime.body.collideWorldBounds = true;
+    this.slime.health = 3;
+    this.slime.nextShoot = 0;
+    this.slime.animations.add('move', [2, 3], 5, true);
+    this.slime.animations.add('shoot', [4, 5], 5, true);
+    this.projectile = game.add.sprite(-10, -10, 'projectile');
+    game.physics.arcade.enable(this.projectile);
+    this.projectile.animations.add('move', [0, 1, 2], 3, true);
   },
   update() {
     // Modules
@@ -83,13 +96,40 @@ const mainState = {
     game.physics.arcade.collide(this.rabbit, this.foregroundLayer);
 
     if (game.time.now > this.rabbit.nextMove) {
-      game.physics.arcade.moveToObject(this.rabbit, this.player, 250);
+      game.physics.arcade.moveToObject(this.rabbit, this.player, 200);
       if (this.rabbit.x > this.player.x + 30) this.rabbit.animations.play('left');
       else if (this.rabbit.x < this.player.x - 30) this.rabbit.animations.play('right');
       else if (this.rabbit.y > this.player.y) this.rabbit.animations.play('up');
       else this.rabbit.animations.play('down');
     } else if (this.player.x > this.rabbit.x) this.rabbit.frame = 7;
     else if (this.player.x < this.rabbit.x) this.rabbit.frame = 4;
+
+    if (this.player.exp >= 100) {
+      this.player.level++;
+      this.player.exp -= 100;
+      this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+      this.destroyText(this.levelUpText);
+    }
+    if (this.player.health === 0) {
+      this.player.kill();
+      this.gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+    }
+
+    if (game.physics.arcade.distanceBetween(this.player, this.slime) > 300) {
+      game.physics.arcade.moveToObject(this.slime, this.player, 100);
+      this.slime.animations.play('move');
+    }
+    else {
+      this.slime.body.velocity.x = 0;
+      this.slime.body.velocity.y = 0;
+      this.slime.animations.play('shoot');
+      if (game.time.now > this.slime.nextShoot) {
+        this.projectile.reset(this.slime.x, this.slime.y);
+        game.physics.arcade.moveToObject(this.projectile, this.player, 400);
+        this.projectile.animations.play('move');
+        this.slime.nextShoot = game.time.now + 1000;
+      }
+    }
 
     // TEMP
     this.levelText.text = `Level: ${playerModule.getLevel()}`;
@@ -99,7 +139,9 @@ const mainState = {
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
+    game.physics.arcade.overlap(this.player, this.projectile, this.getShot, null, this);
     game.physics.arcade.overlap(playerModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
+    game.physics.arcade.overlap(playerModule.getBullets(), this.slime, this.shootSlime, null, this);
   },
   togglePause() {
     game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
@@ -148,31 +190,10 @@ const mainState = {
     game.physics.arcade.moveToObject(rabbit, player, -100);
     game.physics.arcade.moveToObject(player, rabbit, -200);
     // deal damage to the player
-
     player.health--;
     // show text when hit
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
-    // Kill enemy if enemyHp is 0.
-    if (rabbit.health === 0) {
-      player.exp += 10;  // Increment exp value
-      // Level up if exp reaches over 100.
-      if (player.exp >= 100) {
-        player.level++;
-        player.exp = 0;
-        this.levelUpText = game.add.text(player.x, player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-        this.destroyText(this.levelUpText);
-      }
-      // rabbit respawns when killed
-      rabbit.x = Math.random() * 800;
-      rabbit.y = Math.random() * 600;
-      rabbit.health = 3;
-    }
-    // if player's health is 0, the game is over
-    if (player.health === 0) {
-      player.kill();
-      // gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
-    }
   },
   pickUpFruit(player, fruit) {
     player.health += fruit.healingStrength;
@@ -195,16 +216,9 @@ const mainState = {
     // Kill enemy if enemyHp is 0.
     if (rabbit.health === 0) {
       this.player.exp += 10;  // Increment exp value
-      // Level up if exp reaches over 100.
-      if (this.player.exp >= 100) {
-        this.player.level++;
-        this.player.exp = 0;
-        this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-        this.destroyText(this.levelUpText);
-      }
       // rabbit respawns 1 second after killed
       rabbit.x = Math.random() * 800;
-      rabbit.y = Math.random() * 600;
+      rabbit.y = Math.random() * 640;
       rabbit.body.velocity.x = 0;
       rabbit.body.velocity.y = 0;
       rabbit.health = 3;
@@ -213,6 +227,28 @@ const mainState = {
     // otherwise the rabbit is knocked back
     } else game.physics.arcade.moveToObject(this.rabbit, this.player, -100);
   },
+  shootSlime(slime, bullet) {
+    bullet.kill();
+    slime.health--;
+    this.hitText = game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
+    this.destroyText(this.hitText);
+    if (slime.health == 0) {
+      this.player.exp += 15;
+      slime.x = Math.random() * 800;
+      slime.y = Math.random() * 640;
+      slime.health = 3;
+      slime.nextShoot = game.time.now + 1000;
+    }
+  },
+  getShot(player, projectile) {
+    projectile.reset(-10, -10);
+    projectile.body.velocity.x = 0;
+    projectile.body.velocity.y = 0;
+    player.health--;
+    game.physics.arcade.moveToObject(player, this.slime, -100);
+    this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
+    this.destroyText(this.hitText);
+  }
 };
 
 game.state.add('main', mainState);
