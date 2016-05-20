@@ -7,7 +7,6 @@ const module = {
 
   preload() {
     this.game.load.spritesheet('player', '/assets/player.png', 32, 16);
-    this.game.load.image('bullet', '/assets/bullet.png');
   },
 
   create() {
@@ -15,7 +14,7 @@ const module = {
     this.game.physics.arcade.enable(this.player);
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.collideWorldBounds = true;
-    this.player.body.allowRotation = false;
+  //  this.player.body.allowRotation = false;
 
     this.bullets = this.game.add.group();
     this.bullets.enableBody = true;
