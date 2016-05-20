@@ -30,7 +30,7 @@ const mainState = {
     levelModule.create();
     playerModule.create();
     this.player = playerModule.getPlayer();
-
+    game.camera.follow(this.player);
     gunModule.create(this.player, playerModule.getCursors());
 
 
