@@ -11,7 +11,6 @@ const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 const mainState = {
   preload() {
     // Modules
-    playerModule.initialize(game);
     playerModule.preload(game);
     gunModule.preload(game);
 
@@ -32,8 +31,7 @@ const mainState = {
     playerModule.create();
     this.player = playerModule.getPlayer();
 
-    gunModule.initialize(game, this.player, playerModule.getCursors());
-    gunModule.create();
+    gunModule.create(this.player, playerModule.getCursors());
 
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });

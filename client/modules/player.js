@@ -1,11 +1,8 @@
 
 
 const module = {
-  initialize(game) {
+  preload(game) {
     this.game = game;
-  },
-
-  preload() {
     this.game.load.spritesheet('player', '/assets/player.png', 32, 16);
   },
 

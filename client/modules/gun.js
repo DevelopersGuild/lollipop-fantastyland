@@ -1,17 +1,14 @@
 const module = {
-  initialize(game, player, cursors) {
+  preload(game) {
     this.game = game;
+    this.game.load.image('gun', '/assets/shotgun.png');
+    this.game.load.image('bullet', '/assets/bullet.png');
+
+  },
+
+  create(player, cursors) {
     this.player = player;
     this.cursors = cursors;
-  },
-
-  preload(_game) {
-    _game.load.image('gun', '/assets/shotgun.png');
-    _game.load.image('bullet', '/assets/bullet.png');
-
-  },
-
-  create() {
     this.gun = this.game.add.sprite(this.player.x + this.player.width, this.player.y, 'gun');
     this.gun.anchor.set(0.5, 1);
 
