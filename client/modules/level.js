@@ -3,8 +3,8 @@ const module = {
 
   preload(game) {
     this.game = game;
-    this.game.load.tilemap('map', 'assets/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
-    this.game.load.image('browserquest', 'assets/tilesets/browserquest.png');
+    this.game.load.tilemap('map', 'assets/levels/grassland1.json', null, Phaser.Tilemap.TILED_JSON);
+    this.game.load.image('browserquest', 'assets/levels/tilesets/browserquest.png');
   },
 
   create() {
@@ -13,13 +13,15 @@ const module = {
 
     this.background1Layer = this.map.createLayer('Background-1');
     this.background2Layer = this.map.createLayer('Background-2');
-    this.foregroundLayer = this.map.createLayer('Foreground-Pass');
-    this.collisionLayer = this.map.createLayer('Foreground-Collide');
+    this.foregroundLayer = this.map.createLayer('Foreground');
+    this.collisionLayer = this.map.createLayer('Collision');
 
     this.background1Layer.resizeWorld();
     this.background2Layer.resizeWorld();
     this.foregroundLayer.resizeWorld();
     this.collisionLayer.resizeWorld();
+
+    this.collisionLayer.alpha = 0;
     this.game.physics.arcade.enable(this.collisionLayer);
     this.map.setCollisionByExclusion([], true, this.collisionLayer);
   },
