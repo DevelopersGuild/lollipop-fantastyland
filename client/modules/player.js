@@ -1,4 +1,5 @@
 
+
 const module = {
   initialize(game) {
     this.game = game;
@@ -61,9 +62,9 @@ const module = {
     this.player.body.maxVelocity.x = 200;
     this.player.body.maxVelocity.y = 200;
 
-    if (this.cursors.up.isDown || this.cursors.right.isDown || this.cursors.left.isDown || this.cursors.down.isDown) {
+  /*  if (this.cursors.up.isDown || this.cursors.right.isDown || this.cursors.left.isDown || this.cursors.down.isDown) {
       this.fire();
-    }
+    }*/
 
     if (this.a.isDown) {
       this.player.body.acceleration.x = -500;
@@ -97,6 +98,11 @@ const module = {
     return this.bullets;
   },
 
+  getCursors(){
+    return this.cursors;
+  },
+
+/*
   fire() {
     if (this.game.time.now > this.nextFire && this.bullets.countDead() > 0) {
       this.nextFire = this.game.time.now + this.fireRate;
@@ -108,8 +114,9 @@ const module = {
       else if (this.cursors.right.isDown) bullet.body.velocity.x += 500;
       if (this.cursors.up.isDown) bullet.body.velocity.y -= 500;
       else if (this.cursors.down.isDown) bullet.body.velocity.y += 500;
+
     }
-  },
+  },*/
 };
 
 export default module;

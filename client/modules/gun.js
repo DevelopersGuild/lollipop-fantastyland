@@ -3,10 +3,13 @@ let player;
 let game;
 let bullets;
 let fireTimer;
+let fireRate = 200;
+let cursors;
 
-function initialize(_game, _player) {
+function initialize(_game, _player, _cursors) {
   game = _game;
   player = _player;
+  cursors = _cursors;
 }
 
 function preload(pgame) {
@@ -24,15 +27,21 @@ function create() {
 
 function fire() {
   if (game.time.now > fireTimer && bullets.countDead() > 0) {
-    // fireTimer = game.time.now + fireRate;
+    fireTimer = game.time.now + fireRate;
     const bullet = bullets.getFirstDead();
-    bullet.reset(player.x, player.y);
-    game.physics.arcade.moveToPointer(bullet, 300);
+    bullet.reset(gun.x, gun.y);
+    bullet.body.velocity.x = Math.cos(player.rotation)*200;
+    bullet.body.velocity.y = Math.sin(player.rotation)*200;
+
   }
 }
 
 function update() {
-
+  gun.x = player.x + player.width;
+  gun.y = player.y;
+  if (cursors.up.isDown || cursors.down.isDown || cursors.left.isDown || cursors.right.isDown)  {
+    fire();
+  }
 }
 
 function getGun() {

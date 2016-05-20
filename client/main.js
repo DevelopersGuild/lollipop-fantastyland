@@ -45,7 +45,7 @@ const mainState = {
     playerModule.create();
     this.player = playerModule.getPlayer();
 
-    gunModule.initialize(game, playerModule.getPlayer());
+    gunModule.initialize(game, this.player, playerModule.getCursors());
     gunModule.create();
 
 
@@ -91,6 +91,7 @@ const mainState = {
   update() {
     // Modules
     playerModule.update();
+    gunModule.update();
 
     game.physics.arcade.collide(this.player, this.foregroundLayer);
     game.physics.arcade.collide(this.rabbit, this.foregroundLayer);
@@ -140,8 +141,8 @@ const mainState = {
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
     game.physics.arcade.overlap(this.player, this.projectile, this.getShot, null, this);
-    game.physics.arcade.overlap(playerModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
-    game.physics.arcade.overlap(playerModule.getBullets(), this.slime, this.shootSlime, null, this);
+    game.physics.arcade.overlap(gunModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
+    game.physics.arcade.overlap(gunModule.getBullets(), this.slime, this.shootSlime, null, this);
   },
   togglePause() {
     game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
