@@ -31,10 +31,11 @@ const module = {
     this.topLayer.resizeWorld();
   },
 
-  update(player, rabbit, slime) {
+  update(player, rabbit, slime, mushroom) {
     this.game.physics.arcade.collide(player, this.collisionLayer);
     this.game.physics.arcade.collide(rabbit, this.collisionLayer);
     this.game.physics.arcade.collide(slime, this.collisionLayer);
+    this.game.physics.arcade.collide(mushroom, this.collisionLayer);
   },
 };
 
