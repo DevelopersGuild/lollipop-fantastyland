@@ -5,11 +5,13 @@ const module = {
     this.game = game;
     this.game.load.tilemap('map', 'assets/map.json', null, Phaser.Tilemap.TILED_JSON);
     this.game.load.image('browserquest', 'assets/tilesets/browserquest.png');
+    this.game.load.image('entities', 'assets/tilesets/entities.png');
   },
 
   create() {
     this.map = this.game.add.tilemap('map');
     this.map.addTilesetImage('browserquest', 'browserquest');
+    this.map.addTilesetImage('entities', 'entities');
 
     this.background2Layer = this.map.createLayer('Background-2');
     this.background1Layer = this.map.createLayer('Background-1');
