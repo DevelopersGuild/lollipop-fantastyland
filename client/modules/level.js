@@ -1,3 +1,4 @@
+import playerModule from './player';
 
 function parseEntity(entity) {
   switch (entity.index) {
@@ -12,6 +13,7 @@ function parseEntity(entity) {
       break;
     // Player
     case 1976:
+      playerModule.respawn(entity.x * 32, entity.y * 32);
       break;
     // Duck
     case 1977:
@@ -57,7 +59,9 @@ const module = {
 
     this.game.physics.arcade.enable(this.collisionLayer);
     this.map.setCollisionByExclusion([], true, this.collisionLayer);
+  },
 
+  createEntities() {
     this.entitiesLayer.getTiles(0, 0, this.map.width * 32, this.map.height * 32).forEach((tile) => {
       // If tile.index !== 1, then it's an entity tile
       if (tile.index !== -1) {

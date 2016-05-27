@@ -18,12 +18,12 @@ const pauseMenu = {
           y1 = h/2 - 180/2, y2 = h/2 + 180/2;
 
        // Check if the click was inside the menu
-      if (event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ) {    
+      if (event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ) {
       }
       // Remove the menu and the label
       else {
           mainState.menu.destroy();
-          
+
           // Unpause the game
           game.paused = false;
           //mainState.togglePause();
@@ -117,7 +117,7 @@ const mainState = {
       if (game.paused == true) {
          console.log("game paused true");
          mainState.menu = game.add.sprite(270, 235, 'menu');
-         
+
       } else {
           console.log("game paused false");
           mainState.menu.destroy();
@@ -126,10 +126,8 @@ const mainState = {
     // Add a input listener that can help us return from being paused
     game.input.onDown.add(pauseMenu.unpause, {});
     // README: Keep this at the bottom of this function!
+    levelModule.createEntities();
     levelModule.createTopLayer();
-
-
-
   },
 
 

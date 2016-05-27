@@ -7,10 +7,11 @@ const module = {
   },
 
   create() {
-    this.player = this.game.add.sprite(500, 200, 'player');
+    this.player = this.game.add.sprite(0, 0, 'player');
     this.game.physics.arcade.enable(this.player);
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.collideWorldBounds = true;
+    this.player.visibility = false;
   //  this.player.body.allowRotation = false;
 
     this.bullets = this.game.add.group();
@@ -72,6 +73,13 @@ const module = {
     } else if (this.s.isDown) {
       this.player.body.acceleration.y = 500;
     }
+  },
+
+  respawn(x, y) {
+    this.player.health = 100;
+    this.player.x = x;
+    this.player.y = y;
+    this.player.visibility = true;
   },
 
   getLevel() {
