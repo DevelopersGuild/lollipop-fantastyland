@@ -17,7 +17,6 @@
     "buffer": "^4.6.0",
     "gulp": "^3.9.1",
     "gulp-if": "^2.0.0",
-    "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.5.3",
     "nodemon": "^1.9.1",
     "vinyl-buffer": "^1.0.0",
