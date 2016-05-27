@@ -1,4 +1,31 @@
 
+function parseEntity(entity) {
+  switch (entity.index) {
+    // Slime
+    case 1961:
+      break;
+    // Rabbit
+    case 1962:
+      break;
+    // Mushroom
+    case 1963:
+      break;
+    // Player
+    case 1976:
+      break;
+    // Duck
+    case 1977:
+      break;
+    // Chair NPC
+    case 1988:
+      break;
+    // Apricot
+    case 1981:
+      break;
+    default:
+  }
+}
+
 const module = {
 
   preload(game) {
@@ -17,15 +44,26 @@ const module = {
     this.background1Layer = this.map.createLayer('Background-1');
     this.foregroundLayer = this.map.createLayer('Foreground');
     this.collisionLayer = this.map.createLayer('Collision');
+    this.entitiesLayer = this.map.createLayer('Entities');
 
     this.background2Layer.resizeWorld();
     this.background1Layer.resizeWorld();
     this.foregroundLayer.resizeWorld();
     this.collisionLayer.resizeWorld();
+    this.entitiesLayer.resizeWorld();
 
     this.collisionLayer.alpha = 0;
+    this.entitiesLayer.alpha = 0;
+
     this.game.physics.arcade.enable(this.collisionLayer);
     this.map.setCollisionByExclusion([], true, this.collisionLayer);
+
+    this.entitiesLayer.getTiles(0, 0, this.map.width * 32, this.map.height * 32).forEach((tile) => {
+      // If tile.index !== 1, then it's an entity tile
+      if (tile.index !== -1) {
+        parseEntity(tile);
+      }
+    });
   },
 
   createTopLayer() {
