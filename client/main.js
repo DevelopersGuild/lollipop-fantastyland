@@ -7,6 +7,32 @@ window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
 
 const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
+let w = 800;
+let h = 640;
+const pauseMenu = {
+  unpause(event) {   //unpause is a method on pauseMenu... (pauseMenu.unpause)
+    // Only act if paused
+    if (game.paused) {
+      // Calculate corners of the menu
+      let x1 = w/2 - 270/2, x2 = w/2 + 270/2,
+          y1 = h/2 - 180/2, y2 = h/2 + 180/2;
+
+       // Check if the click was inside the menu
+      if (event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ) {    
+      }
+      // Remove the menu and the label
+      else {
+          mainState.menu.destroy();
+          
+          // Unpause the game
+          game.paused = false;
+          //mainState.togglePause();
+      }
+    }
+  }
+
+}
+
 
 const mainState = {
   preload() {
@@ -22,6 +48,7 @@ const mainState = {
     game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
+    game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -69,11 +96,29 @@ const mainState = {
     this.npc.animations.play('walk', 5, true);
     this.npc.collideWorldBounds = true;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    this.spaceKey.onDown.add(this.togglePause, this);
-
+    this.spaceKey.onDown.add(function () {
+      // When the pause  button is pressed, game is paused
+      // menu
+      mainState.togglePause();
+      if (game.paused == true) {
+         console.log("game paused true");
+         mainState.menu = game.add.sprite(270, 235, 'menu');
+         
+      } else {
+          console.log("game paused false");
+          mainState.menu.destroy();
+      }
+    });
+    // Add a input listener that can help us return from being paused
+    game.input.onDown.add(pauseMenu.unpause, {});
     // README: Keep this at the bottom of this function!
     levelModule.createTopLayer();
+
+
+
   },
+
+
   update() {
     // Modules
     playerModule.update();
@@ -129,7 +174,7 @@ const mainState = {
     game.physics.arcade.overlap(gunModule.getBullets(), this.slime, this.shootSlime, null, this);
   },
   togglePause() {
-    game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
+    game.paused = !game.paused;
   },
   destroyText(text) {
     setTimeout(() => {
