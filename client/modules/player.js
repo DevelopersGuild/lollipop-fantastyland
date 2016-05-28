@@ -73,6 +73,17 @@ const module = {
     } else if (this.s.isDown) {
       this.player.body.acceleration.y = 500;
     }
+
+    if (this.player.exp >= 100) {
+      this.player.level++;
+      this.player.exp -= 100;
+      this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+      this.destroyText(this.levelUpText);
+    }
+    if (this.player.health === 0) {
+      this.player.kill();
+      this.gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+    }
   },
 
   respawn(x, y) {
@@ -102,7 +113,7 @@ const module = {
     return this.bullets;
   },
 
-  getCursors(){
+  getCursors() {
     return this.cursors;
   },
 

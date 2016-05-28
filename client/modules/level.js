@@ -1,3 +1,4 @@
+import monsterModule from './monster';
 import playerModule from './player';
 
 function parseEntity(entity) {
@@ -62,6 +63,9 @@ const module = {
   },
 
   createEntities() {
+    this.monsterGroup = monsterModule.getMonsterGroup();
+    this.player = playerModule.getPlayer();
+
     this.entitiesLayer.getTiles(0, 0, this.map.width * 32, this.map.height * 32).forEach((tile) => {
       // If tile.index !== 1, then it's an entity tile
       if (tile.index !== -1) {
@@ -75,11 +79,9 @@ const module = {
     this.topLayer.resizeWorld();
   },
 
-  update(player, rabbit, slime, mushroom) {
-    this.game.physics.arcade.collide(player, this.collisionLayer);
-    this.game.physics.arcade.collide(rabbit, this.collisionLayer);
-    this.game.physics.arcade.collide(slime, this.collisionLayer);
-    this.game.physics.arcade.collide(mushroom, this.collisionLayer);
+  update() {
+    this.game.physics.arcade.collide(this.player, this.collisionLayer);
+    this.game.physics.arcade.collide(this.monsterGroup, this.collisionLayer);
   },
 };
 
