@@ -212,6 +212,10 @@ const module = {
   getMonsters() {
     return this.monsters;
   },
+
+  getProjectiles() {
+    return this.projectiles;
+  },
 };
 
 export default module;

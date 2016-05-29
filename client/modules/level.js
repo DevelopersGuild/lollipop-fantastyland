@@ -1,3 +1,4 @@
+import gunModule from './gun';
 import monsterModule from './monster';
 import playerModule from './player';
 
@@ -67,7 +68,9 @@ const module = {
 
   createEntities() {
     this.monsters = monsterModule.getMonsters();
+    this.monsterProjectiles = monsterModule.getProjectiles();
     this.player = playerModule.getPlayer();
+    this.playerBullets = gunModule.getBullets();
 
     this.entitiesLayer.getTiles(0, 0, this.map.width * 32, this.map.height * 32).forEach((tile) => {
       // If tile.index !== 1, then it's an entity tile
@@ -83,8 +86,10 @@ const module = {
   },
 
   update() {
+    this.monsters.children.forEach((monster) => {
+      this.game.physics.arcade.collide(monster, this.collisionLayer);
+    });
     this.game.physics.arcade.collide(this.player, this.collisionLayer);
-    this.game.physics.arcade.collide(this.monsters, this.collisionLayer);
   },
 };
 
