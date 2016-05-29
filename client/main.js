@@ -22,6 +22,7 @@ const mainState = {
     game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
+    game.load.image('topbar', '/assets/topbar.png');
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -62,7 +63,8 @@ const mainState = {
     this.fruit = game.add.sprite(300, 300, 'fruit');
     game.physics.arcade.enable(this.fruit);
     this.fruit.body.collideWorldBounds = true;
-    this.fruit.healingStrength = 25;
+    this.fruit.healthEffect = 25;
+    this.fruit.itemType = 'healthEdible';
     this.npc = game.add.sprite(100, 400, 'npc');
     game.physics.arcade.enable(this.npc);
     this.npc.animations.add('walk');
@@ -71,6 +73,11 @@ const mainState = {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.spaceKey.onDown.add(this.togglePause, this);
 
+    this.topbar = game.add.image(20, 20, 'topbar');
+    this.topbar.x = game.width/2 - this.topbar.width/2;
+    console.log(this.topbar.x);
+
+    playerModule.pickUpItem(gunModule.getGun());
     // README: Keep this at the bottom of this function!
     levelModule.createTopLayer();
   },
@@ -122,7 +129,7 @@ const mainState = {
     this.expText.text = `Exp: ${playerModule.getExp()}`;
 
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
-    game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
+    game.physics.arcade.overlap(this.player, this.fruit, playerModule.pickUpItem(this.fruit), null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
     game.physics.arcade.overlap(this.player, this.projectile, this.getShot, null, this);
     game.physics.arcade.overlap(gunModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
@@ -179,14 +186,6 @@ const mainState = {
     // show text when hit
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
-  },
-  pickUpFruit(player, fruit) {
-    player.health += fruit.healingStrength;
-    if (player.health > 100) {
-      player.health = 100;
-    }
-
-    fruit.kill();
   },
   shootEnemy(rabbit, bullet) {
     // kill the bullet

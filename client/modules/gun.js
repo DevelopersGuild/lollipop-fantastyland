@@ -20,6 +20,8 @@ const module = {
 
     this.fireTimer = 0;
     this.fireRate = 200;
+    this.speed = 800;
+    this.itemType = "weapon";
   },
 
   fire() {
@@ -29,12 +31,12 @@ const module = {
       for (let i = 0; i < 3; i++) {
         let bullet = this.bullets.getFirstDead();
         bullet.reset(this.gun.x, this.gun.y);
-        bullet.body.velocity.x = Math.cos(angle+(3.14/4)*i)*200;
-        bullet.body.velocity.y = Math.sin(angle+(3.14/4)*i)*200;
+        bullet.body.velocity.x = Math.cos(angle+(3.14/4)*i)*this.speed;
+        bullet.body.velocity.y = Math.sin(angle+(3.14/4)*i)*this.speed;
         let bullet2 = this.bullets.getFirstDead();
         bullet2.reset(this.gun.x, this.gun.y);
-        bullet2.body.velocity.x = Math.cos(angle-(3.14/4)*i)*200;
-        bullet2.body.velocity.y = Math.sin(angle-(3.14/4)*i)*200;
+        bullet2.body.velocity.x = Math.cos(angle-(3.14/4)*i)*this.speed;
+        bullet2.body.velocity.y = Math.sin(angle-(3.14/4)*i)*this.speed;
       }
     }
   },
@@ -47,12 +49,21 @@ const module = {
     }
   },
 
+
   getBullets() {
     return this.bullets;
   },
 
   getCursors() {
     return this.cursors;
+  },
+
+  getItemType() {
+    return this.itemType;
+  },
+
+  getGun() {
+    return this.gun;
   }
 }
 

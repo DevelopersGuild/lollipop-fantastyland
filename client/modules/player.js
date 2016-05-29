@@ -15,7 +15,7 @@ const module = {
 
     this.bullets = this.game.add.group();
     this.bullets.enableBody = true;
-    this.bullets.createMultiple(50, 'bullet');
+    this.bullets.createMultiple(100, 'bullet');
     this.bullets.setAll('checkWorldBounds', true);
     this.bullets.setAll('outOfBoundsKill', true);
 
@@ -36,6 +36,8 @@ const module = {
 
     this.fireRate = 200;
     this.nextFire = 0;
+
+    this.inventory = this.game.add.group();
   },
 
   update() {
@@ -73,7 +75,20 @@ const module = {
       this.player.body.acceleration.y = 500;
     }
   },
+  applyHealthBuff(item) {
+    this.player.health += item.healthEffect;
+    if (this.player.health > 100) {
+      this.player.health = 100;
+    }
 
+    item.kill();
+  },
+  pickUpItem(item) {
+    switch(item.itemType) {
+        case 'healthEdible': this.applyHealthBuff(item);
+        default: this.inventory.add(item); break;
+    }
+  },
   getLevel() {
     return this.player.level;
   },
@@ -96,6 +111,10 @@ const module = {
 
   getCursors(){
     return this.cursors;
+  },
+
+  getInventory() {
+    return this.inventory;
   },
 
 /*
