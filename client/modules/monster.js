@@ -18,7 +18,7 @@ function killEnemy(player, rabbit) {
   destroyText(hitText);
 }
 
-function shootEnemy(rabbit, bullet) {
+function shootEnemy(bullet, rabbit) {
   // kill the bullet
   bullet.kill();
   // deal damage to the rabbit
@@ -31,14 +31,8 @@ function shootEnemy(rabbit, bullet) {
   // Kill enemy if enemyHp is 0.
   if (rabbit.health === 0) {
     // this.player.exp += 10;  // Increment exp value
-    // rabbit respawns 1 second after killed
-    rabbit.x = Math.random() * 800;
-    rabbit.y = Math.random() * 1440;
-    rabbit.body.velocity.x = 0;
-    rabbit.body.velocity.y = 0;
-    rabbit.health = 3;
-    rabbit.nextMove = this.game.time.now + 1000;
 
+    rabbit.destroy();
   // otherwise the rabbit is knocked back
   }
   // else game.physics.arcade.moveToObject(this.rabbit, this.player, -100);
@@ -54,32 +48,27 @@ function getShot(player, projectile) {
   destroyText(hitText);
 }
 
-function shootSlime(slime, bullet) {
+function shootSlime(bullet, slime) {
   bullet.kill();
   slime.health--;
   const hitText = this.game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (slime.health === 0) {
     // player.exp += 15;
-    slime.x = Math.random() * 800;
-    slime.y = Math.random() * 1440;
-    slime.health = 3;
-    slime.nextShoot = this.game.time.now + 1000;
+    slime.slimeball.destroy();
+    slime.destroy();
   }
 }
 
-function shootMushroom(mushroom, bullet) {
+function shootMushroom(bullet, mushroom) {
   bullet.kill();
   mushroom.health--;
   const hitText = this.game.add.text(mushroom.x, mushroom.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (mushroom.health === 0) {
     // this.player.exp += 50;
-    mushroom.x = Math.random() * 800;
-    mushroom.y = Math.random() * 1440;
-    mushroom.health = 8;
-    mushroom.nextMove = this.game.time.now + 1500;
-    mushroom.nextJump = this.game.time.now + 5000;
+    mushroom.shockwave.destroy();
+    mushroom.destroy();
   }
 }
 
