@@ -70,8 +70,7 @@ const mainState = {
     // Music
     this.backgroundMusic = game.add.audio('bgm');
     this.battleMusic = game.add.audio('battle');
-    this.backgroundMusic.play();
-    this.backgroundMusic.volume = 0;
+    this.backgroundMusic.play('', 0, 0, false);
 
     this.fruit = game.add.sprite(300, 300, 'fruit');
     game.physics.arcade.enable(this.fruit);
