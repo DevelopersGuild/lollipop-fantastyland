@@ -7,7 +7,8 @@
     "max-len": [2, 100, 2, {
       "ignoreUrls": false,
       "ignoreComments": false
-    }]
+    }],
+    "no-param-reassign": 0
   },
   "globals": {
     "Phaser": false
