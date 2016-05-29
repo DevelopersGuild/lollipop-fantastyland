@@ -111,6 +111,8 @@ const module = {
 
     // Misc Attack sub-group
     this.shockwaves = this.game.add.group(this.miscAttacks, 'shockwaves', false, true);
+
+    this.aggro = false;
   },
   update() {
     this.rabbits.children.forEach((rabbit) => {
@@ -189,6 +191,19 @@ const module = {
     this.game.physics.arcade.overlap(this.gunBullets, this.rabbits, shootEnemy, null, this);
     this.game.physics.arcade.overlap(this.gunBullets, this.slimes, shootSlime, null, this);
     this.game.physics.arcade.overlap(this.gunBullets, this.mushrooms, shootMushroom, null, this);
+
+    this.aggro = false;
+
+    for (let i = 0; i < this.monsters.children.length; i++) {
+      for (let j = 0; j < this.monsters.children[i].children.length; j++) {
+        if (this.game.physics.arcade.distanceBetween(this.player, this.monsters.children[i].children[j]) < 375) {
+          this.aggro = true;
+          break;
+        }
+      }
+
+      if (this.aggro) break;
+    }
   },
 
   createRabbit(x, y) {
@@ -230,6 +245,10 @@ const module = {
 
   getProjectiles() {
     return this.projectiles;
+  },
+
+  getAggroState() {
+    return this.aggro;
   },
 };
 

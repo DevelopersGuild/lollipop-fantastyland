@@ -48,6 +48,8 @@ const mainState = {
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
     game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
+    game.load.audio('bgm', 'assets/bgm.mp3');
+    game.load.audio('battle', 'assets/battle.mp3');
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -64,6 +66,12 @@ const mainState = {
     this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
     // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
     this.expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
+
+    // Music
+    this.backgroundMusic = game.add.audio('bgm');
+    this.battleMusic = game.add.audio('battle');
+    this.backgroundMusic.play();
+    this.backgroundMusic.volume = 0;
 
     this.fruit = game.add.sprite(300, 300, 'fruit');
     game.physics.arcade.enable(this.fruit);
@@ -110,6 +118,18 @@ const mainState = {
 
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
+
+    if (!monsterModule.getAggroState()) {
+      if (this.backgroundMusic.volume <= 0.1) {
+        this.backgroundMusic.fadeTo(1000, 1);
+        this.battleMusic.fadeOut(1000);
+      }
+    } else {
+      if (!this.battleMusic.isPlaying) {
+        this.battleMusic.fadeIn(1, true);
+        this.backgroundMusic.fadeTo(1, 0.01);
+      }
+    }
   },
   togglePause() {
     game.paused = !game.paused;
