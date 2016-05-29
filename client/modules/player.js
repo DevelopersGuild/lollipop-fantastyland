@@ -8,7 +8,7 @@ function destroyText(text) {
 const module = {
   preload(game) {
     this.game = game;
-    this.game.load.spritesheet('player', '/assets/player.png', 32, 16);
+    this.game.load.spritesheet('player', '/assets/player.png', 32, 48);
   },
 
   create() {
@@ -42,6 +42,13 @@ const module = {
 
     this.fireRate = 200;
     this.nextFire = 0;
+
+    // Player animations
+    this.player.animations.add('stop', [0], 1, true);
+    this.player.animations.add('down', [0, 1, 2, 3], 10, true);
+    this.player.animations.add('left', [4, 5, 6, 7], 10, true);
+    this.player.animations.add('right', [8, 9, 10, 11], 10, true);
+    this.player.animations.add('up', [12, 13, 14, 15], 10, true);
   },
 
   update() {
@@ -73,10 +80,26 @@ const module = {
     } else if (this.d.isDown) {
       this.player.body.acceleration.x = 500;
     }
+
     if (this.w.isDown) {
       this.player.body.acceleration.y = -500;
     } else if (this.s.isDown) {
       this.player.body.acceleration.y = 500;
+    }
+
+    if (this.a.isDown || this.d.isDown || this.w.isDown || this.s.isDown) {
+      if (this.w.isDown) {
+        this.player.animations.play('up');
+      } else if (this.s.isDown) {
+        this.player.animations.play('down');
+      } else if (this.a.isDown) {
+        this.player.animations.play('left');
+      } else if (this.d.isDown) {
+        this.player.animations.play('right');
+
+      }
+    } else {
+      this.player.animations.play('stop');
     }
 
     if (this.player.exp >= 100) {
