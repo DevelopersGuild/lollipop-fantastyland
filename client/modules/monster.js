@@ -49,7 +49,7 @@ function getShot(player, projectile) {
   projectile.body.velocity.x = 0;
   projectile.body.velocity.y = 0;
   player.health--;
-  this.game.physics.arcade.moveToObject(player, this.slime, -100);
+  this.game.physics.arcade.moveToObject(player, projectile, -100);
   const hitText = this.game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
 }
@@ -98,116 +98,126 @@ const module = {
     this.game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
     this.game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
     this.game.load.spritesheet('slime', '/assets/slime.png', 32, 32);
-    this.game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
+    this.game.load.spritesheet('slimeball', '/assets/projectile.png', 16, 16);
     this.game.load.spritesheet('mushroom', '/assets/mushroom.png', 68, 60);
   },
   create() {
-    this.monsterGroup = this.game.add.group();
+    // Base groups
+    this.monsters = this.game.add.group();
+    this.projectiles = this.game.add.group();
+    this.miscAttacks = this.game.add.group();
 
-    this.rabbit = this.game.add.sprite(200, 200, 'rabbit');
-    this.game.physics.arcade.enable(this.rabbit);
-    this.rabbit.body.collideWorldBounds = true;
-    this.rabbit.health = 3;
-    this.rabbit.nextMove = 0;
-    this.rabbit.animations.add('down', [0, 1, 2], 10, true);
-    this.rabbit.animations.add('left', [3, 4, 5], 10, true);
-    this.rabbit.animations.add('right', [6, 7, 8], 10, true);
-    this.rabbit.animations.add('up', [9, 10, 11], 10, true);
+    // Monster sub-groups
+    this.rabbits = this.game.add.group(this.monsters, 'rabbits', false, true);
+    this.slimes = this.game.add.group(this.monsters, 'slimes', false, true);
+    this.mushrooms = this.game.add.group(this.monsters, 'mushrooms', false, true);
 
-    // Add rabbit to monster group
-    this.monsterGroup.add(this.rabbit);
+    // Projectile sub-groups
+    this.slimeballs = this.game.add.group(this.projectiles, 'slimeballs', false, true);
 
-    this.slime = this.game.add.sprite(500, 400, 'slime');
-    this.game.physics.arcade.enable(this.slime);
-    this.slime.body.collideWorldBounds = true;
-    this.slime.health = 3;
-    this.slime.nextShoot = 0;
-    this.slime.animations.add('move', [2, 3], 5, true);
-    this.slime.animations.add('shoot', [4, 5], 5, true);
-    this.projectile = this.game.add.sprite(-10, -10, 'projectile');
-    this.game.physics.arcade.enable(this.projectile);
-    this.projectile.animations.add('move', [0, 1, 2], 3, true);
-
-    // Add slime and projective to monster group
-    this.monsterGroup.add(this.slime);
-    this.monsterGroup.add(this.projectile);
-
-    this.mushroom = this.game.add.sprite(300, 400, 'mushroom');
-    this.game.physics.arcade.enable(this.mushroom);
-    this.mushroom.anchor.set(0.5, 0.5);
-    this.mushroom.body.collideWorldBounds = true;
-    this.mushroom.health = 8;
-    this.mushroom.nextMove = 0;
-    this.mushroom.nextJump = 0;
-    this.mushroom.animations.add('move', [0, 1, 2, 3], 10, true);
-    this.mushroom.animations.add('jump', [4, 5, 6, 7, 8], 5, true);
-    this.shockwave = this.game.add.sprite(0, 0, 'shockwave');
-    this.shockwave.alpha = 0;
-
-    // Add mushroom to monster group
-    this.monsterGroup.add(this.mushroom);
+    // Misc Attack sub-group
+    this.shockwaves = this.game.add.group(this.miscAttacks, 'shockwaves', false, true);
   },
   update(player, bullets) {
-    if (this.game.time.now > this.rabbit.nextMove) {
-      this.game.physics.arcade.moveToObject(this.rabbit, player, 200);
-      if (this.rabbit.x > player.x + 30) this.rabbit.animations.play('left');
-      else if (this.rabbit.x < player.x - 30) this.rabbit.animations.play('right');
-      else if (this.rabbit.y > player.y) this.rabbit.animations.play('up');
-      else this.rabbit.animations.play('down');
-    } else if (player.x > this.rabbit.x) this.rabbit.frame = 7;
-    else if (player.x < this.rabbit.x) this.rabbit.frame = 4;
+    this.rabbits.children.forEach((rabbit) => {
+      if (this.game.time.now > rabbit.nextMove) {
+        this.game.physics.arcade.moveToObject(rabbit, player, 200);
+        if (rabbit.x > player.x + 30) rabbit.animations.play('left');
+        else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
+        else if (rabbit.y > player.y) rabbit.animations.play('up');
+        else rabbit.animations.play('down');
+      } else if (player.x > rabbit.x) rabbit.frame = 7;
+      else if (player.x < rabbit.x) rabbit.frame = 4;
+    });
 
-    if (this.game.physics.arcade.distanceBetween(player, this.slime) > 300) {
-      this.game.physics.arcade.moveToObject(this.slime, player, 100);
-      this.slime.animations.play('move');
-    } else {
-      this.slime.body.velocity.x = 0;
-      this.slime.body.velocity.y = 0;
-      this.slime.animations.play('shoot');
-      if (this.game.time.now > this.slime.nextShoot) {
-        this.projectile.reset(this.slime.x, this.slime.y);
-        this.game.physics.arcade.moveToObject(this.projectile, player, 400);
-        this.projectile.animations.play('move');
-        this.slime.nextShoot = this.game.time.now + 1000;
-      }
-    }
-
-    if (this.game.time.now > this.mushroom.nextMove) {
-      this.game.physics.arcade.moveToObject(this.mushroom, player, 150);
-      this.mushroom.animations.play('move');
-      if (player.x > this.mushroom.x) this.mushroom.scale.x = -1;
-      else this.mushroom.scale.x = 1;
-    } else {
-      this.mushroom.body.velocity.x = 0;
-      this.mushroom.body.velocity.y = 0;
-      this.mushroom.animations.play('jump');
-    }
-    if (this.game.time.now > this.mushroom.nextJump) {
-      setTimeout(() => {
-        this.shockwave.reset(this.mushroom.x - 140, this.mushroom.y - 140);
-        this.shockwave.alpha = 1;
-        if (this.game.physics.arcade.distanceBetween(player, this.mushroom) < 160) {
-          player.health -= 3;
-          this.hitText = this.game.add.text(player.x, player.y, '-3', { fontSize: '16px', fill: 'red' });
-          destroyText(this.hitText);
+    this.slimes.children.forEach((slime) => {
+      if (this.game.physics.arcade.distanceBetween(player, slime) > 300) {
+        this.game.physics.arcade.moveToObject(slime, player, 100);
+        slime.animations.play('move');
+      } else {
+        slime.body.velocity.x = 0;
+        slime.body.velocity.y = 0;
+        slime.animations.play('shoot');
+        if (this.game.time.now > slime.nextShoot) {
+          slime.slimeball.reset(slime.x, slime.y);
+          this.game.physics.arcade.moveToObject(slime.slimeball, player, 400);
+          slime.slimeball.animations.play('move');
+          slime.nextShoot = this.game.time.now + 1000;
         }
-      }, 1000);
-      setTimeout(() => { this.shockwave.alpha = 0; }, 1500);
-      this.mushroom.nextMove = this.game.time.now + 1500;
-      this.mushroom.nextJump = this.game.time.now + 5000;
-    }
+      }
+    });
 
-    this.game.physics.arcade.overlap(player, this.rabbit, killEnemy, null, this);
-    this.game.physics.arcade.overlap(player, this.projectile, getShot, null, this);
-    this.game.physics.arcade.overlap(player, this.mushroom, hitMushroom, null, this);
+    this.mushrooms.children.forEach((mushroom) => {
+      if (this.game.time.now > mushroom.nextMove) {
+        this.game.physics.arcade.moveToObject(mushroom, player, 150);
+        mushroom.animations.play('move');
+        if (player.x > mushroom.x) mushroom.scale.x = -1;
+        else mushroom.scale.x = 1;
+      } else {
+        mushroom.body.velocity.x = 0;
+        mushroom.body.velocity.y = 0;
+        mushroom.animations.play('jump');
+      }
+      if (this.game.time.now > mushroom.nextJump) {
+        setTimeout(() => {
+          mushroom.shockwave.reset(mushroom.x - 140, mushroom.y - 140);
+          mushroom.shockwave.alpha = 1;
+          if (this.game.physics.arcade.distanceBetween(player, mushroom) < 160) {
+            player.health -= 3;
+            const hitText = this.game.add.text(player.x, player.y, '-3', { fontSize: '16px', fill: 'red' });
+            destroyText(hitText);
+          }
+        }, 1000);
+        setTimeout(() => { mushroom.shockwave.alpha = 0; }, 1500);
+        mushroom.nextMove = this.game.time.now + 1500;
+        mushroom.nextJump = this.game.time.now + 5000;
+      }
+    });
 
-    this.game.physics.arcade.overlap(bullets, this.rabbit, shootEnemy, null, this);
-    this.game.physics.arcade.overlap(bullets, this.slime, shootSlime, null, this);
-    this.game.physics.arcade.overlap(bullets, this.mushroom, shootMushroom, null, this);
+    this.game.physics.arcade.overlap(player, this.rabbits, killEnemy, null, this);
+    this.game.physics.arcade.overlap(player, this.slimeballs, getShot, null, this);
+    this.game.physics.arcade.overlap(player, this.mushrooms, hitMushroom, null, this);
+
+    this.game.physics.arcade.overlap(bullets, this.rabbits, shootEnemy, null, this);
+    this.game.physics.arcade.overlap(bullets, this.slimes, shootSlime, null, this);
+    this.game.physics.arcade.overlap(bullets, this.mushrooms, shootMushroom, null, this);
   },
 
-  getMonsterGroup() {
-    return this.monsterGroup;
+  createRabbit(x, y) {
+    const rabbit = this.rabbits.create(x, y, 'rabbit');
+    rabbit.health = 3;
+    rabbit.nextMove = 0;
+    rabbit.animations.add('down', [0, 1, 2], 10, true);
+    rabbit.animations.add('left', [3, 4, 5], 10, true);
+    rabbit.animations.add('right', [6, 7, 8], 10, true);
+    rabbit.animations.add('up', [9, 10, 11], 10, true);
+  },
+
+  createSlime(x, y) {
+    const slime = this.slimes.create(x, y, 'slime');
+    slime.health = 3;
+    slime.nextShoot = 0;
+    slime.animations.add('move', [2, 3], 5, true);
+    slime.animations.add('shoot', [4, 5], 5, true);
+
+    slime.slimeball = this.slimeballs.create(-10, -10, 'slimeball');
+    slime.slimeball.animations.add('move', [0, 1, 2], 3, true);
+  },
+
+  createMushroom(x, y) {
+    const mushroom = this.mushrooms.create(x, y, 'mushroom');
+    mushroom.anchor.set(0.5, 0.5);
+    mushroom.health = 8;
+    mushroom.nextMove = 0;
+    mushroom.nextJump = 0;
+    mushroom.animations.add('move', [0, 1, 2, 3], 10, true);
+    mushroom.animations.add('jump', [4, 5, 6, 7, 8], 5, true);
+    mushroom.shockwave = this.game.add.sprite(0, 0, 'shockwave');
+    mushroom.shockwave.alpha = 0;
+  },
+
+  getMonsters() {
+    return this.monsters;
   },
 };
 

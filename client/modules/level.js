@@ -5,12 +5,15 @@ function parseEntity(entity) {
   switch (entity.index) {
     // Slime
     case 1961:
+      monsterModule.createSlime(entity.x * 32, entity.y * 32);
       break;
     // Rabbit
     case 1962:
+      monsterModule.createRabbit(entity.x * 32, entity.y * 32);
       break;
     // Mushroom
     case 1963:
+      monsterModule.createMushroom(entity.x * 32, entity.y * 32);
       break;
     // Player
     case 1976:
@@ -63,7 +66,7 @@ const module = {
   },
 
   createEntities() {
-    this.monsterGroup = monsterModule.getMonsterGroup();
+    this.monsters = monsterModule.getMonsters();
     this.player = playerModule.getPlayer();
 
     this.entitiesLayer.getTiles(0, 0, this.map.width * 32, this.map.height * 32).forEach((tile) => {
@@ -81,7 +84,7 @@ const module = {
 
   update() {
     this.game.physics.arcade.collide(this.player, this.collisionLayer);
-    this.game.physics.arcade.collide(this.monsterGroup, this.collisionLayer);
+    this.game.physics.arcade.collide(this.monsters, this.collisionLayer);
   },
 };
 
