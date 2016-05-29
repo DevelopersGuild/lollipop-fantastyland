@@ -56,11 +56,10 @@ const mainState = {
     // Modules
     levelModule.create();
     playerModule.create();
-    monsterModule.create();
     this.player = playerModule.getPlayer();
     game.camera.follow(this.player);
     gunModule.create(this.player, playerModule.getCursors());
-
+    monsterModule.create();
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
     this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
@@ -103,7 +102,7 @@ const mainState = {
     playerModule.update();
     gunModule.update();
     levelModule.update();
-    monsterModule.update(this.player, gunModule.getBullets());
+    monsterModule.update();
 
     // TEMP
     this.levelText.text = `Level: ${playerModule.getLevel()}`;

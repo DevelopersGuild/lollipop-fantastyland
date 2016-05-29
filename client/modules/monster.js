@@ -1,3 +1,5 @@
+import gunModule from './gun';
+import playerModule from './player';
 
 function destroyText(text) {
   setTimeout(() => {
@@ -30,12 +32,11 @@ function shootEnemy(bullet, rabbit) {
   rabbit.nextMove = this.game.time.now + 100;
   // Kill enemy if enemyHp is 0.
   if (rabbit.health === 0) {
-    // this.player.exp += 10;  // Increment exp value
+    this.player.exp += 10;  // Increment exp value
 
     rabbit.destroy();
   // otherwise the rabbit is knocked back
-  }
-  // else game.physics.arcade.moveToObject(this.rabbit, this.player, -100);
+  } else this.game.physics.arcade.moveToObject(rabbit, this.player, -100);
 }
 
 function getShot(player, projectile) {
@@ -54,7 +55,7 @@ function shootSlime(bullet, slime) {
   const hitText = this.game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (slime.health === 0) {
-    // player.exp += 15;
+    this.player.exp += 15;
     slime.slimeball.destroy();
     slime.destroy();
   }
@@ -66,7 +67,7 @@ function shootMushroom(bullet, mushroom) {
   const hitText = this.game.add.text(mushroom.x, mushroom.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (mushroom.health === 0) {
-    // this.player.exp += 50;
+    this.player.exp += 50;
     mushroom.shockwave.destroy();
     mushroom.destroy();
   }
@@ -91,6 +92,9 @@ const module = {
     this.game.load.spritesheet('mushroom', '/assets/mushroom.png', 68, 60);
   },
   create() {
+    this.player = playerModule.getPlayer();
+    this.gunBullets = gunModule.getBullets();
+
     // Base groups
     this.monsters = this.game.add.group();
     this.projectiles = this.game.add.group();
@@ -107,21 +111,21 @@ const module = {
     // Misc Attack sub-group
     this.shockwaves = this.game.add.group(this.miscAttacks, 'shockwaves', false, true);
   },
-  update(player, bullets) {
+  update() {
     this.rabbits.children.forEach((rabbit) => {
       if (this.game.time.now > rabbit.nextMove) {
-        this.game.physics.arcade.moveToObject(rabbit, player, 200);
-        if (rabbit.x > player.x + 30) rabbit.animations.play('left');
-        else if (rabbit.x < player.x - 30) rabbit.animations.play('right');
-        else if (rabbit.y > player.y) rabbit.animations.play('up');
+        this.game.physics.arcade.moveToObject(rabbit, this.player, 200);
+        if (rabbit.x > this.player.x + 30) rabbit.animations.play('left');
+        else if (rabbit.x < this.player.x - 30) rabbit.animations.play('right');
+        else if (rabbit.y > this.player.y) rabbit.animations.play('up');
         else rabbit.animations.play('down');
-      } else if (player.x > rabbit.x) rabbit.frame = 7;
-      else if (player.x < rabbit.x) rabbit.frame = 4;
+      } else if (this.player.x > rabbit.x) rabbit.frame = 7;
+      else if (this.player.x < rabbit.x) rabbit.frame = 4;
     });
 
     this.slimes.children.forEach((slime) => {
-      if (this.game.physics.arcade.distanceBetween(player, slime) > 300) {
-        this.game.physics.arcade.moveToObject(slime, player, 100);
+      if (this.game.physics.arcade.distanceBetween(this.player, slime) > 300) {
+        this.game.physics.arcade.moveToObject(slime, this.player, 100);
         slime.animations.play('move');
       } else {
         slime.body.velocity.x = 0;
@@ -129,7 +133,7 @@ const module = {
         slime.animations.play('shoot');
         if (this.game.time.now > slime.nextShoot) {
           slime.slimeball.reset(slime.x, slime.y);
-          this.game.physics.arcade.moveToObject(slime.slimeball, player, 400);
+          this.game.physics.arcade.moveToObject(slime.slimeball, this.player, 400);
           slime.slimeball.animations.play('move');
           slime.nextShoot = this.game.time.now + 1000;
         }
@@ -138,9 +142,9 @@ const module = {
 
     this.mushrooms.children.forEach((mushroom) => {
       if (this.game.time.now > mushroom.nextMove) {
-        this.game.physics.arcade.moveToObject(mushroom, player, 150);
+        this.game.physics.arcade.moveToObject(mushroom, this.player, 150);
         mushroom.animations.play('move');
-        if (player.x > mushroom.x) mushroom.scale.x = -1;
+        if (this.player.x > mushroom.x) mushroom.scale.x = -1;
         else mushroom.scale.x = 1;
       } else {
         mushroom.body.velocity.x = 0;
@@ -151,9 +155,9 @@ const module = {
         setTimeout(() => {
           mushroom.shockwave.reset(mushroom.x - 140, mushroom.y - 140);
           mushroom.shockwave.alpha = 1;
-          if (this.game.physics.arcade.distanceBetween(player, mushroom) < 160) {
-            player.health -= 3;
-            const hitText = this.game.add.text(player.x, player.y, '-3', { fontSize: '16px', fill: 'red' });
+          if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 160) {
+            this.player.health -= 3;
+            const hitText = this.game.add.text(this.player.x, this.player.y, '-3', { fontSize: '16px', fill: 'red' });
             destroyText(hitText);
           }
         }, 1000);
@@ -163,13 +167,13 @@ const module = {
       }
     });
 
-    this.game.physics.arcade.overlap(player, this.rabbits, killEnemy, null, this);
-    this.game.physics.arcade.overlap(player, this.slimeballs, getShot, null, this);
-    this.game.physics.arcade.overlap(player, this.mushrooms, hitMushroom, null, this);
+    this.game.physics.arcade.overlap(this.player, this.rabbits, killEnemy, null, this);
+    this.game.physics.arcade.overlap(this.player, this.slimeballs, getShot, null, this);
+    this.game.physics.arcade.overlap(this.player, this.mushrooms, hitMushroom, null, this);
 
-    this.game.physics.arcade.overlap(bullets, this.rabbits, shootEnemy, null, this);
-    this.game.physics.arcade.overlap(bullets, this.slimes, shootSlime, null, this);
-    this.game.physics.arcade.overlap(bullets, this.mushrooms, shootMushroom, null, this);
+    this.game.physics.arcade.overlap(this.gunBullets, this.rabbits, shootEnemy, null, this);
+    this.game.physics.arcade.overlap(this.gunBullets, this.slimes, shootSlime, null, this);
+    this.game.physics.arcade.overlap(this.gunBullets, this.mushrooms, shootMushroom, null, this);
   },
 
   createRabbit(x, y) {
