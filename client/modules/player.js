@@ -1,4 +1,9 @@
 
+function destroyText(text) {
+  setTimeout(() => {
+    text.destroy();
+  }, 1000);
+}
 
 const module = {
   preload(game) {
@@ -77,12 +82,12 @@ const module = {
     if (this.player.exp >= 100) {
       this.player.level++;
       this.player.exp -= 100;
-      this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-      this.destroyText(this.levelUpText);
+      this.levelUpText = this.game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
+      destroyText(this.levelUpText);
     }
     if (this.player.health === 0) {
       this.player.kill();
-      this.gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+      this.gameOverText = this.game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
     }
   },
 
