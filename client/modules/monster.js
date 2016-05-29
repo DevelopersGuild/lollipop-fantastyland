@@ -90,6 +90,7 @@ const module = {
     this.game.load.spritesheet('slime', '/assets/slime.png', 32, 32);
     this.game.load.spritesheet('slimeball', '/assets/projectile.png', 16, 16);
     this.game.load.spritesheet('mushroom', '/assets/mushroom.png', 68, 60);
+    this.game.load.image('shockwave', '/assets/shockwave.png');
   },
   create() {
     this.player = playerModule.getPlayer();
@@ -114,7 +115,11 @@ const module = {
   update() {
     this.rabbits.children.forEach((rabbit) => {
       if (this.game.time.now > rabbit.nextMove) {
-        this.game.physics.arcade.moveToObject(rabbit, this.player, 200);
+        if (this.game.physics.arcade.distanceBetween(this.player, rabbit) < 375) {
+          this.game.physics.arcade.moveToObject(rabbit, this.player, 200);
+        } else {
+          this.game.physics.arcade.moveToObject(rabbit, this.player, 0);
+        }
         if (rabbit.x > this.player.x + 30) rabbit.animations.play('left');
         else if (rabbit.x < this.player.x - 30) rabbit.animations.play('right');
         else if (rabbit.y > this.player.y) rabbit.animations.play('up');
@@ -125,8 +130,13 @@ const module = {
 
     this.slimes.children.forEach((slime) => {
       if (this.game.physics.arcade.distanceBetween(this.player, slime) > 300) {
-        this.game.physics.arcade.moveToObject(slime, this.player, 100);
-        slime.animations.play('move');
+        if (this.game.physics.arcade.distanceBetween(this.player, slime) < 375) {
+          this.game.physics.arcade.moveToObject(slime, this.player, 100);
+          slime.animations.play('move');
+        } else {
+          this.game.physics.arcade.moveToObject(slime, this.player, 0);
+          // Idle Animation
+        }
       } else {
         slime.body.velocity.x = 0;
         slime.body.velocity.y = 0;
@@ -142,8 +152,13 @@ const module = {
 
     this.mushrooms.children.forEach((mushroom) => {
       if (this.game.time.now > mushroom.nextMove) {
-        this.game.physics.arcade.moveToObject(mushroom, this.player, 150);
-        mushroom.animations.play('move');
+        if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 375) {
+          this.game.physics.arcade.moveToObject(mushroom, this.player, 150);
+          mushroom.animations.play('move');
+        } else {
+          this.game.physics.arcade.moveToObject(mushroom, this.player, 0);
+          // Idle Animation
+        }
         if (this.player.x > mushroom.x) mushroom.scale.x = -1;
         else mushroom.scale.x = 1;
       } else {

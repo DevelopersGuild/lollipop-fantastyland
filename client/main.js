@@ -48,7 +48,6 @@ const mainState = {
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
     game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
-    game.load.image('shockwave', '/assets/shockwave.png');
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
