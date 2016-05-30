@@ -100,6 +100,9 @@ const mainState = {
     // README: Keep this at the bottom of this function!
     levelModule.createEntities();
     levelModule.createTopLayer();
+
+    // UI Code
+    this.hitpointsUI = document.getElementById('hitpoints');
   },
 
 
@@ -129,6 +132,7 @@ const mainState = {
         this.backgroundMusic.fadeTo(1, 0.01);
       }
     }
+    this.hitpointsUI.style.width = `${playerModule.getHealth() / 100 * 180}px`;
   },
   togglePause() {
     game.paused = !game.paused;
