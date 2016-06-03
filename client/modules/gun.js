@@ -25,7 +25,7 @@ const module = {
   },
 
   fire() {
-    if (this.game.time.now > this.fireTimer && this.bullets.countDead() > 0) {
+    if (this.game.time.now > this.fireTimer && this.bullets.countDead() > 5) {
       this.fireTimer = this.game.time.now + this.fireRate;
       let angle = this.player.rotation-(3.14159/2); // Use player rotation offset -90 degrees to account for righthand starting polar coordinate system
       for (let i = 0; i < 3; i++) {

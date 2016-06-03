@@ -5,7 +5,6 @@ var buffer = require('vinyl-buffer');
 var gulp = require('gulp');
 var gulpif = require('gulp-if');
 var nodemon = require('nodemon');
-var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
 var uglify = require('gulp-uglify');
 

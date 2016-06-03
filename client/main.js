@@ -1,4 +1,5 @@
 import levelModule from './modules/level';
+import monsterModule from './modules/monster';
 import playerModule from './modules/player';
 import gunModule from './modules/gun';
 
@@ -7,6 +8,32 @@ window.p2 = require('phaser/build/custom/p2');
 window.Phaser = require('phaser/build/custom/phaser-split');
 
 const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
+let w = 800;
+let h = 640;
+const pauseMenu = {
+  unpause(event) {   //unpause is a method on pauseMenu... (pauseMenu.unpause)
+    // Only act if paused
+    if (game.paused) {
+      // Calculate corners of the menu
+      let x1 = w/2 - 270/2, x2 = w/2 + 270/2,
+          y1 = h/2 - 180/2, y2 = h/2 + 180/2;
+
+       // Check if the click was inside the menu
+      if (event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ) {
+      }
+      // Remove the menu and the label
+      else {
+          mainState.menu.destroy();
+
+          // Unpause the game
+          game.paused = false;
+          //mainState.togglePause();
+      }
+    }
+  }
+
+}
+
 
 const mainState = {
   preload() {
@@ -16,13 +43,14 @@ const mainState = {
 
     levelModule.preload(game);
 
-    game.load.spritesheet('rabbit', '/assets/rabbit.png', 32, 32);
-    game.load.spritesheet('npc', '/assets/chick.png', 16, 18, 4);
-    game.load.spritesheet('slime', '/assets/slime.png', 32, 32);
-    game.load.spritesheet('projectile', '/assets/projectile.png', 16, 16);
+    monsterModule.preload(game);
+
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
-    game.load.image('topbar', '/assets/topbar.png');
+
+    game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
+    game.load.audio('bgm', 'assets/bgm.mp3');
+    game.load.audio('battle', 'assets/battle.mp3');
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -33,32 +61,17 @@ const mainState = {
     this.player = playerModule.getPlayer();
     game.camera.follow(this.player);
     gunModule.create(this.player, playerModule.getCursors());
-
+    monsterModule.create();
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
     this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
     // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
     this.expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
-    this.rabbit = game.add.sprite(200, 200, 'rabbit');
-    game.physics.arcade.enable(this.rabbit);
-    this.rabbit.body.collideWorldBounds = true;
-    this.rabbit.health = 3;
-    this.rabbit.nextMove = 0;
-    this.rabbit.animations.add('down', [0, 1, 2], 10, true);
-    this.rabbit.animations.add('left', [3, 4, 5], 10, true);
-    this.rabbit.animations.add('right', [6, 7, 8], 10, true);
-    this.rabbit.animations.add('up', [9, 10, 11], 10, true);
 
-    this.slime = game.add.sprite(500, 400, 'slime');
-    game.physics.arcade.enable(this.slime);
-    this.slime.body.collideWorldBounds = true;
-    this.slime.health = 3;
-    this.slime.nextShoot = 0;
-    this.slime.animations.add('move', [2, 3], 5, true);
-    this.slime.animations.add('shoot', [4, 5], 5, true);
-    this.projectile = game.add.sprite(-10, -10, 'projectile');
-    game.physics.arcade.enable(this.projectile);
-    this.projectile.animations.add('move', [0, 1, 2], 3, true);
+    // Music
+    this.backgroundMusic = game.add.audio('bgm');
+    this.battleMusic = game.add.audio('battle');
+    this.backgroundMusic.play('', 0, 0, false);
 
     this.fruit = game.add.sprite(300, 300, 'fruit');
     game.physics.arcade.enable(this.fruit);
@@ -71,57 +84,46 @@ const mainState = {
     this.npc.animations.play('walk', 5, true);
     this.npc.collideWorldBounds = true;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    this.spaceKey.onDown.add(this.togglePause, this);
 
-    this.topbar = game.add.image(20, 20, 'topbar');
+
+  /*  this.topbar = game.add.image(20, 20, 'topbar');
     this.topbar.x = game.width/2 - this.topbar.width/2;
-    console.log(this.topbar.x);
+    console.log(this.topbar.x);*/
 
     playerModule.pickUpItem(gunModule.getGun());
+    this.spaceKey.onDown.add(function () {
+      // When the pause  button is pressed, game is paused
+      // menu
+      mainState.togglePause();
+      if (game.paused == true) {
+         console.log("game paused true");
+         mainState.menu = game.add.sprite(270, 235, 'menu');
+
+      } else {
+          console.log("game paused false");
+          mainState.menu.destroy();
+      }
+    });
+    // Add a input listener that can help us return from being paused
+    game.input.onDown.add(pauseMenu.unpause, {});
     // README: Keep this at the bottom of this function!
+    levelModule.createEntities();
     levelModule.createTopLayer();
+
+    this.bmd = this.game.make.bitmapData(800, 600);
+    for (let i = 0; i < 10; i++) {
+      this.bmd.rect(100+i*50,20,32,32, '#666666');
+    }
+    this.ui = this.game.add.sprite(0, 0, this.bmd);
   },
+
+
   update() {
     // Modules
     playerModule.update();
     gunModule.update();
-    levelModule.update(this.player, this.rabbit, this.slime);
-
-    if (game.time.now > this.rabbit.nextMove) {
-      game.physics.arcade.moveToObject(this.rabbit, this.player, 200);
-      if (this.rabbit.x > this.player.x + 30) this.rabbit.animations.play('left');
-      else if (this.rabbit.x < this.player.x - 30) this.rabbit.animations.play('right');
-      else if (this.rabbit.y > this.player.y) this.rabbit.animations.play('up');
-      else this.rabbit.animations.play('down');
-    } else if (this.player.x > this.rabbit.x) this.rabbit.frame = 7;
-    else if (this.player.x < this.rabbit.x) this.rabbit.frame = 4;
-
-    if (this.player.exp >= 100) {
-      this.player.level++;
-      this.player.exp -= 100;
-      this.levelUpText = game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
-      this.destroyText(this.levelUpText);
-    }
-    if (this.player.health === 0) {
-      this.player.kill();
-      this.gameOverText = game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
-    }
-
-    if (game.physics.arcade.distanceBetween(this.player, this.slime) > 300) {
-      game.physics.arcade.moveToObject(this.slime, this.player, 100);
-      this.slime.animations.play('move');
-    }
-    else {
-      this.slime.body.velocity.x = 0;
-      this.slime.body.velocity.y = 0;
-      this.slime.animations.play('shoot');
-      if (game.time.now > this.slime.nextShoot) {
-        this.projectile.reset(this.slime.x, this.slime.y);
-        game.physics.arcade.moveToObject(this.projectile, this.player, 400);
-        this.projectile.animations.play('move');
-        this.slime.nextShoot = game.time.now + 1000;
-      }
-    }
+    levelModule.update();
+    monsterModule.update();
 
     // TEMP
     this.levelText.text = `Level: ${playerModule.getLevel()}`;
@@ -131,12 +133,22 @@ const mainState = {
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
     game.physics.arcade.overlap(this.player, this.fruit, playerModule.pickUpItem(this.fruit), null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
-    game.physics.arcade.overlap(this.player, this.projectile, this.getShot, null, this);
-    game.physics.arcade.overlap(gunModule.getBullets(), this.rabbit, this.shootEnemy, null, this);
-    game.physics.arcade.overlap(gunModule.getBullets(), this.slime, this.shootSlime, null, this);
+
+    if (!monsterModule.getAggroState()) {
+      if (this.backgroundMusic.volume <= 0.1) {
+        this.backgroundMusic.fadeTo(1000, 1);
+        this.battleMusic.fadeOut(1000);
+      }
+    } else {
+      if (!this.battleMusic.isPlaying) {
+        this.battleMusic.fadeIn(1, true);
+        this.backgroundMusic.fadeTo(1, 0.01);
+      }
+    }
+
   },
   togglePause() {
-    game.physics.arcade.isPaused = !game.physics.arcade.isPaused;
+    game.paused = !game.paused;
   },
   destroyText(text) {
     setTimeout(() => {
@@ -233,6 +245,14 @@ const mainState = {
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
   }
+/*  pickUpFruit(player, fruit) {
+    player.health += fruit.healingStrength;
+    if (player.health > 100) {
+      player.health = 100;
+    }
+
+    fruit.kill();
+  },*/
 };
 
 game.state.add('main', mainState);
