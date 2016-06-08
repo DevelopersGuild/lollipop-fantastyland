@@ -2,6 +2,7 @@ import levelModule from './modules/level';
 import monsterModule from './modules/monster';
 import playerModule from './modules/player';
 import gunModule from './modules/gun';
+import itemModule from './modules/item';
 
 window.PIXI = require('phaser/build/custom/pixi');
 window.p2 = require('phaser/build/custom/p2');
@@ -44,6 +45,7 @@ const mainState = {
     levelModule.preload(game);
 
     monsterModule.preload(game);
+    itemModule.preload(game);
 
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
@@ -61,11 +63,11 @@ const mainState = {
     game.camera.follow(this.player);
     gunModule.create(this.player, playerModule.getCursors());
     monsterModule.create();
+    itemModule.create();
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
     this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
-    // manaText = game.add.text(16, 48, 'Mana: 100', { fontSize: '16px', fill: '#670' });
-    this.expText = game.add.text(16, 64, 'Exp: 0', { fontSize: '16px', fill: '#670' });
+    this.expText = game.add.text(16, 48, 'Exp: 0', { fontSize: '16px', fill: '#670' });
 
     // Music
     this.backgroundMusic = game.add.audio('bgm');
@@ -112,14 +114,27 @@ const mainState = {
     gunModule.update();
     levelModule.update();
     monsterModule.update();
+    itemModule.update();
 
     // TEMP
     this.levelText.text = `Level: ${playerModule.getLevel()}`;
     this.healthText.text = `Health: ${playerModule.getHealth()}`;
     this.expText.text = `Exp: ${playerModule.getExp()}`;
 
+    this.levelText.y = game.camera.y + 16;
+    this.healthText.y = game.camera.y + 32;
+    this.expText.y = game.camera.y + 48;
+
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
+    if (game.physics.arcade.overlap(this.player, itemModule.getCoins(), itemModule.pickUpCoin, null, this))
+      itemModule.gainGold();
+    if (game.physics.arcade.overlap(this.player, itemModule.getMeats(), itemModule.pickUpMeat, null, this))
+      itemModule.gainMeat();
+    if (game.physics.arcade.overlap(this.player, itemModule.getGels(), itemModule.pickUpGel, null, this))
+      itemModule.gainGel();
+    if (game.physics.arcade.overlap(this.player, itemModule.getCaps(), itemModule.pickUpCap, null, this))
+      itemModule.gainCap();
 
     if (!monsterModule.getAggroState()) {
       if (this.backgroundMusic.volume <= 0.1) {

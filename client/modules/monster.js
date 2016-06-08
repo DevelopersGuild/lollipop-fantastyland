@@ -1,5 +1,6 @@
 import gunModule from './gun';
 import playerModule from './player';
+import itemModule from './item';
 
 function destroyText(text) {
   setTimeout(() => {
@@ -33,7 +34,7 @@ function shootEnemy(bullet, rabbit) {
   // Kill enemy if enemyHp is 0.
   if (rabbit.health === 0) {
     this.player.exp += 10;  // Increment exp value
-
+    itemModule.rabbitDrop(rabbit);
     rabbit.destroy();
   // otherwise the rabbit is knocked back
   } else this.game.physics.arcade.moveToObject(rabbit, this.player, -100);
@@ -56,6 +57,7 @@ function shootSlime(bullet, slime) {
   destroyText(hitText);
   if (slime.health === 0) {
     this.player.exp += 15;
+    itemModule.slimeDrop(slime);
     slime.slimeball.destroy();
     slime.destroy();
   }
@@ -68,6 +70,7 @@ function shootMushroom(bullet, mushroom) {
   destroyText(hitText);
   if (mushroom.health === 0) {
     this.player.exp += 50;
+    itemModule.mushroomDrop(mushroom);
     mushroom.shockwave.destroy();
     mushroom.destroy();
   }
