@@ -173,12 +173,14 @@ const module = {
       }
       if (this.game.time.now > mushroom.nextJump) {
         setTimeout(() => {
-          mushroom.shockwave.reset(mushroom.x - 140, mushroom.y - 140);
-          mushroom.shockwave.alpha = 1;
-          if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 160) {
-            this.player.health -= 3;
-            const hitText = this.game.add.text(this.player.x, this.player.y, '-3', { fontSize: '16px', fill: 'red' });
-            destroyText(hitText);
+          if (!this.game.paused) {
+            mushroom.shockwave.reset(mushroom.x - 140, mushroom.y - 140);
+            mushroom.shockwave.alpha = 1;
+            if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 160) {
+              this.player.health -= 3;
+              const hitText = this.game.add.text(this.player.x, this.player.y, '-3', { fontSize: '16px', fill: 'red' });
+              destroyText(hitText);
+            }
           }
         }, 1000);
         setTimeout(() => { mushroom.shockwave.alpha = 0; }, 1500);
