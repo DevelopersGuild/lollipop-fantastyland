@@ -119,19 +119,19 @@ const playerModule = {
 
   update() {
     if (this.player.body.velocity.x > 0) {
-      this.player.body.acceleration.x = -300;
+      this.player.body.acceleration.x = -500;
     }
 
     if (this.player.body.velocity.x < 0) {
-      this.player.body.acceleration.x = 300;
+      this.player.body.acceleration.x = 500;
     }
 
     if (this.player.body.velocity.y > 0) {
-      this.player.body.acceleration.y = -300;
+      this.player.body.acceleration.y = -500;
     }
 
     if (this.player.body.velocity.y < 0) {
-      this.player.body.acceleration.y = 300;
+      this.player.body.acceleration.y = 500;
     }
 
     this.player.body.maxVelocity.x = 200;
@@ -152,12 +152,22 @@ const playerModule = {
     if (this.a.isDown || this.d.isDown || this.w.isDown || this.s.isDown) {
       if (this.w.isDown) {
         this.player.animations.play('up');
+        this.inventory.children[this.selected].rotation = 0;
+        this.inventory.children[this.selected].y += 10;
       } else if (this.s.isDown) {
         this.player.animations.play('down');
+        this.inventory.children[this.selected].rotation = Math.PI;
+        this.inventory.children[this.selected].y -= 10;
+
       } else if (this.a.isDown) {
         this.player.animations.play('left');
+        this.inventory.children[this.selected].rotation = 3*Math.PI/2;
+        this.inventory.children[this.selected].x -= 10;
+
       } else if (this.d.isDown) {
         this.player.animations.play('right');
+        this.inventory.children[this.selected].rotation = Math.PI/2;
+        this.inventory.children[this.selected].x += 10;
       }
     } else {
       this.player.animations.stop(null, true);
