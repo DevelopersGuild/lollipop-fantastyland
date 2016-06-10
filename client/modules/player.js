@@ -5,14 +5,18 @@ function destroyText(text) {
   }, 1000);
 }
 
-const module = {
-  preload(game) {
+const playerModule = {
+  preload(game, state) {
     this.game = game;
     this.game.load.spritesheet('player', '/assets/player.png', 32, 48);
+    this.game.load.image('rifle_thumbnail', '/assets/rifle-thumbnail.png');
+    this.state = state;
   },
 
   create() {
     this.player = this.game.add.sprite(0, 0, 'player');
+    this.rifle_thumbnail = this.game.add.sprite(0,0,'rifle_thumbnail');
+
     this.game.physics.arcade.enable(this.player);
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.collideWorldBounds = true;
@@ -24,11 +28,11 @@ const module = {
     this.bullets.setAll('checkWorldBounds', true);
     this.bullets.setAll('outOfBoundsKill', true);
 
-    this.w = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
-    this.a = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
-    this.s = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
-    this.d = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
-    this.cursors = this.game.input.keyboard.createCursorKeys();
+    this.w = this.state.input.keyboard.addKey(Phaser.Keyboard.W);
+    this.a = this.state.input.keyboard.addKey(Phaser.Keyboard.A);
+    this.s = this.state.input.keyboard.addKey(Phaser.Keyboard.S);
+    this.d = this.state.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.cursors = this.state.input.keyboard.createCursorKeys();
 
     // Initialize Level
     this.player.level = 1;
@@ -42,7 +46,64 @@ const module = {
     this.fireRate = 200;
     this.nextFire = 0;
 
+
     this.inventory = this.game.add.group();
+
+    //Adding key to toggle inventory
+    this.invkey = this.state.input.keyboard.addKey(Phaser.Keyboard.I);
+    //Adding keys to select items from topbar display of inventory
+    this.onekey = this.state.input.keyboard.addKey(Phaser.Keyboard.ONE);
+    this.twokey = this.state.input.keyboard.addKey(Phaser.Keyboard.TWO);
+    this.threekey = this.state.input.keyboard.addKey(Phaser.Keyboard.THREE);
+    this.fourkey = this.state.input.keyboard.addKey(Phaser.Keyboard.FOUR);
+    this.fivekey = this.state.input.keyboard.addKey(Phaser.Keyboard.FIVE);
+
+    this.onekey.onDown.add(function(e) { //console.log(e);
+      playerModule.equip(0);
+    });
+    this.twokey.onDown.add(function(e) { //console.log(e);
+      playerModule.equip(1);
+    });
+    this.threekey.onDown.add(function(e) { //console.log(e);
+      playerModule.equip(2);
+    });
+    this.fourkey.onDown.add(function(e) { //console.log(e);
+      playerModule.equip(3);
+    });
+    this.fivekey.onDown.add(function(e) { //console.log(e);
+      playerModule.equip(4);
+    }); /*
+    this.threekey.onDown.add(this.equip(2));
+    this.fourkey.onDown.add(this.equip(3));
+    this.fivekey.onDown.add(this.equip(4));*/
+
+
+    //Topbar for inventory items
+    this.TOPBAR_OFFSET = (this.game.width-(5*50))/2;
+    this.topbarBmd = this.game.make.bitmapData(800, 100);
+    for (let i = 0; i < this.inventory.children.length; i++) {
+      this.topbarBmd.rect(this.TOPBAR_OFFSET+i*50,20,32,32, '#666666');
+      this.inventoryBmd.draw(this.inventroy.children[i])
+    }
+
+    this.topbarUi = this.game.add.sprite(0, 0, this.topbarBmd);
+    this.topbarUi.fixedToCamera = true;
+  //Inventory grid
+/*
+    this.inventoryBmd = this.game.make.bitmapData(800,600);
+    for (let j = 0;  j< 10; j++) {
+      for (let k = 0; k < 10; k++) {
+        this.inventoryBmd.rect(200+j*34, 200+k*34, 32, 32,  '#666666');
+      }
+    }
+    this.inventoryUi = this.game.add.sprite(0,0, this.inventoryBmd);
+    this.inventoryUi.fixedToCamera = true;
+    this.inventoryUi.visible = false;
+    this.invkey.onDown.add(function() {
+      mainState.inventoryUi.visible = !mainState.inventoryUi.visible;
+      console.log(mainState.inventoryUi.visible);
+    });*/
+
 
     // Player animations
     this.player.animations.add('stop', [0], 1, true);
@@ -51,6 +112,7 @@ const module = {
     this.player.animations.add('right', [8, 9, 10, 11], 10, true);
     this.player.animations.add('up', [12, 13, 14, 15], 10, true);
   },
+
 
   update() {
     if (this.player.body.velocity.x > 0) {
@@ -131,6 +193,20 @@ const module = {
         default: this.inventory.add(item); break;
     }
   },
+
+  equip(item_index) {
+    if (item_index >= this.inventory.length)
+      return;
+    this.topbarBmd.clear();
+    this.topbarBmd.rect((this.TOPBAR_OFFSET-2)+item_index*50, 18, 36, 36,'#FF0000');
+    for (let i = 0; i < this.inventory.children.length; i++) {
+      this.topbarBmd.rect(this.TOPBAR_OFFSET+i*50,20,32,32, '#666666');
+      this.topbarBmd.draw(this.inventory.children[i], this.TOPBAR_OFFSET+i*50,20);
+    }
+
+    this.topbarUi.loadTexture(this.topbarBmd);
+
+  },
   getLevel() {
     return this.player.level;
   },
@@ -172,4 +248,4 @@ const module = {
 
 };
 
-export default module;
+export default playerModule;

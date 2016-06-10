@@ -38,7 +38,7 @@ const pauseMenu = {
 const mainState = {
   preload() {
     // Modules
-    playerModule.preload(game);
+    playerModule.preload(game, this);
     gunModule.preload(game);
 
     levelModule.preload(game);
@@ -104,17 +104,13 @@ const mainState = {
           mainState.menu.destroy();
       }
     });
+
     // Add a input listener that can help us return from being paused
     game.input.onDown.add(pauseMenu.unpause, {});
     // README: Keep this at the bottom of this function!
     levelModule.createEntities();
     levelModule.createTopLayer();
 
-    this.bmd = this.game.make.bitmapData(800, 600);
-    for (let i = 0; i < 10; i++) {
-      this.bmd.rect(100+i*50,20,32,32, '#666666');
-    }
-    this.ui = this.game.add.sprite(0, 0, this.bmd);
   },
 
 
@@ -129,7 +125,11 @@ const mainState = {
     this.levelText.text = `Level: ${playerModule.getLevel()}`;
     this.healthText.text = `Health: ${playerModule.getHealth()}`;
     this.expText.text = `Exp: ${playerModule.getExp()}`;
+    /*this.bmd.ctx.fillText(`Level: ${playerModule.getLevel()}`, 30, 30);
+    this.bmd.ctx.fillText(`Health: ${playerModule.getHealth()}`, 30, 60);
+    this.bmd.ctx.fillText(`Exp: ${playerModule.getExp()}`, 30, 90);
 
+    this.ui.loadTexture(this.bmd);*/
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
     game.physics.arcade.overlap(this.player, this.fruit, playerModule.pickUpItem(this.fruit), null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
