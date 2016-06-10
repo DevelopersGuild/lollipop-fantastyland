@@ -49,6 +49,8 @@ const mainState = {
 
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
+    game.load.image('shopMenu', '/assets/shopMenu.png');
+    game.load.image('market', '/assets/marketbcg.jpg');
     game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
     game.load.audio('bgm', 'assets/bgm.mp3');
     game.load.audio('battle', 'assets/battle.mp3');
@@ -78,17 +80,31 @@ const mainState = {
     game.physics.arcade.enable(this.fruit);
     this.fruit.body.collideWorldBounds = true;
     this.fruit.healingStrength = 25;
-    this.npc = game.add.sprite(100, 400, 'npc');
+    this.npc = game.add.sprite(130, 200, 'npc');
     game.physics.arcade.enable(this.npc);
     this.npc.animations.add('walk');
     this.npc.animations.play('walk', 5, true);
     this.npc.collideWorldBounds = true;
+    this.isTalkingToNPC = false;
+    this.dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
+    this.dialogWindow.visible = false;
+    this.dialogueText = game.add.text(180, 190, '');
+    this.dialogueText.visible = false;
+    this.choiceText = game.add.text(200, 600, '');
+    this.choiceText.visible = false;
+    this.market = game.add.sprite(0, 0, 'market');
+    this.market.visible = false;
+    this.shopMenu = game.add.sprite(150, 60, 'shopMenu');
+    this.shopMenu.scale.setTo(.8, .8);
+    this.shopMenu.visible = false;
+    this.descriptionText = game.add.text(180, 570, 'Click outside of menu to exit.');
+    this.descriptionText.visible = false;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     this.spaceKey.onDown.add(function () {
       // When the pause  button is pressed, game is paused
       // menu
       mainState.togglePause();
-      if (game.paused == true) {
+      if (game.paused == true && !this.isTalkingToNPC) {
          console.log("game paused true");
          mainState.menu = game.add.sprite(270, 235, 'menu');
 
@@ -126,7 +142,12 @@ const mainState = {
     this.expText.y = game.camera.y + 48;
 
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
-    game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
+    game.physics.arcade.overlap(this.player, this.npc, (player, npc) => {this.displayDialogue(player, npc), setTimeout(() => {this.isTalkingToNPC = true;}, 2400)}, null, this);
+    if(this.isTalkingToNPC){
+    	console.log('is talking');
+    	this.displayShopMenu();
+    	this.isTalkingToNPC = false;
+    }
     if (game.physics.arcade.overlap(this.player, itemModule.getCoins(), itemModule.pickUpCoin, null, this))
       itemModule.gainGold();
     if (game.physics.arcade.overlap(this.player, itemModule.getMeats(), itemModule.pickUpMeat, null, this))
@@ -160,34 +181,57 @@ const mainState = {
   displayDialogue(player, npc) {
     // player is knocked back
     game.physics.arcade.moveToObject(player, npc, -200);
-    // display dialogue
-    this.dialogue = game.add.text(npc.x, npc.y - 18, 'Hi there!', { fontSize: '12px', fill: 'red' });
-    this.destroyText(this.dialogue);
-    setTimeout(() => {
-      this.dialogue = game.add.text(npc.x, npc.y - 18, 'Watch out for the rabbits!', { fontSize: '12px', fill: 'red' });
-      this.destroyText(this.dialogue);
-    }, 2000);
 
     // Pause game and add dialogue window
+    var delay = 1200;
     this.togglePause();
-    this.dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
-    this.dialogueText = game.add.text(180, 190, 'Duck: Welcome to the Weapons Store!');
+    this.dialogueText.text = 'Duck: Welcome to the Weapons Store!';
     this.dialogWindow.visible = true;
-    this.destroyText(this.dialogueText);
+    this.dialogueText.visible = true;
+    
     setTimeout(() => {
-      this.dialogueText = game.add.text(200, 190, 'Duck: How can I help you today?');
-      this.destroyText(this.dialogueText);
-    }, 1500);
+      this.dialogueText.text = 'Duck: How can I help you today?';
+    }, delay);
     setTimeout(() => {
-      this.dialogWindow.destroy();
+      this.dialogWindow.visible = false;
+      this.dialogueText.visible = false;
       this.togglePause();
-    }, 2500);
+    }, 2*delay);
+  },
+  displayShopMenu() {
+  	game.paused = true;
+   	// Display menu
+  	this.market.visible = true;
+  	this.shopMenu.visible = true;
+  	this.descriptionText.visible = true;
 
+    // Calculate 4 corners of the menu
+    var x1 = 150, x2 = 150+512,
+    	y1 = 60, y2 = 60+512;
 
-    setTimeout(() => {
-      this.dialogue = game.add.text(npc.x, npc.y - 18, 'See you next time!', { fontSize: '12px', fill: 'red' });
-      this.destroyText(this.dialogue);
-    }, 4000);
+    	console.log(this.isTalkingToNPC);	// not reading input.
+    this.choiceText.visible = true;
+    this.choiceText.text = 'Choose your weapon.';
+    if(game.input.activePointer.leftButton.isDown && this.isTalkingToNPC){   
+    	var event = game.input.mousePointer;
+    	console.log("input");	// not reading input
+	    if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2){
+	    	var choicemap = ['Group1', 'Group2', 'Group3', 'Group4'];
+	    	var x = game.input.x - x1;
+	    	var y = game.input.y - y1;
+	    	var choice = Math.floor(x/256) + 2*Math.floor(y/256);
+	    	console.log(choice);
+	    	this.choiceText.text = 'Your choice is: ' + choicemap[choice];
+    	}
+    	else{
+    		console.log('Exit');
+    		this.market.visible = false;
+    		this.descriptionText.visible = false;
+    		this.choiceText.visible = false;
+    		this.shopMenu.visible = false;
+    		game.paused = false;
+    	}
+    }
   },
   pickUpFruit(player, fruit) {
     player.health += fruit.healingStrength;
