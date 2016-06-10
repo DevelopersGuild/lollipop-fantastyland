@@ -12,7 +12,7 @@ const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 let w = 800;
 let h = 640;
 const pauseMenu = {
-  unpause(event) {   //unpause is a method on pauseMenu... (pauseMenu.unpause)
+  unpause(event) {   
     // Only act if paused
     if (game.paused) {
       // Calculate corners of the menu
@@ -25,10 +25,9 @@ const pauseMenu = {
       // Remove the menu and the label
       else {
           mainState.menu.destroy();
-
           // Unpause the game
           game.paused = false;
-          //mainState.togglePause();
+         
       }
     }
   }
@@ -50,11 +49,16 @@ const mainState = {
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
 
+
     game.load.image('shopMenu', '/assets/shopMenu.png');
     game.load.image('market', '/assets/marketbcg.jpg');
-    game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
+
+
     game.load.audio('bgm', 'assets/bgm.mp3');
     game.load.audio('battle', 'assets/battle.mp3');
+    game.load.image('menu', '/assets/pauseMenuborder.png', 260, 180);
+    game.load.image('shockwave', '/assets/shockwave.png');
+
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -116,7 +120,6 @@ const mainState = {
       if (game.paused == true && !this.isTalkingToNPC) {
          console.log("game paused true");
          mainState.menu = game.add.sprite(270, 235, 'menu');
-
       } else {
           console.log("game paused false");
           mainState.menu.destroy();
@@ -136,7 +139,7 @@ const mainState = {
 
   update() {
     // Modules
-    playerModule.update();
+    playerModule.update(); 
     gunModule.update();
     levelModule.update();
     monsterModule.update();
