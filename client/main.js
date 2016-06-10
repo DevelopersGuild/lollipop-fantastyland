@@ -92,19 +92,6 @@ const mainState = {
     this.npc.animations.play('walk', 5, true);
     this.npc.collideWorldBounds = true;
     this.isTalkingToNPC = false;
-    this.dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
-    this.dialogWindow.visible = false;
-    this.dialogueText = game.add.text(180, 190, '');
-    this.dialogueText.visible = false;
-    this.choiceText = game.add.text(200, 600, '');
-    this.choiceText.visible = false;
-    this.market = game.add.sprite(0, 0, 'market');
-    this.market.visible = false;
-    this.shopMenu = game.add.sprite(150, 60, 'shopMenu');
-    this.shopMenu.scale.setTo(.8, .8);
-    this.shopMenu.visible = false;
-    this.descriptionText = game.add.text(180, 570, 'Click outside of menu to exit.');
-    this.descriptionText.visible = false;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 
@@ -117,7 +104,7 @@ const mainState = {
       // When the pause  button is pressed, game is paused
       // menu
       mainState.togglePause();
-      if (game.paused == true && !this.isTalkingToNPC) {
+      if (game.paused == true) {
          console.log("game paused true");
          mainState.menu = game.add.sprite(270, 235, 'menu');
       } else {
@@ -131,6 +118,26 @@ const mainState = {
     // README: Keep this at the bottom of this function!
     levelModule.createEntities();
     levelModule.createTopLayer();
+
+    // Draw UI
+    this.dialogWindow = game.add.sprite(95, 150, 'dialogWindow');
+    this.dialogWindow.visible = false;
+    this.dialogueText = game.add.text(180, 190, '');
+    this.dialogueText.visible = false;
+    this.choiceText = game.add.text(200, 600, '');
+    this.choiceText.visible = false;
+    this.market = game.add.sprite(0, 0, 'market');
+    this.market.visible = false;
+    this.shopMenu = game.add.sprite(150, 60, 'shopMenu');
+    this.shopMenu.scale.setTo(.8, .8);
+    this.shopMenu.visible = false;
+    this.descriptionText = game.add.text(180, 570, '');
+    this.descriptionText.visible = false;
+    this.shopKey1 = game.input.keyboard.addKey(Phaser.Keyboard.A);
+	this.shopKey2 = game.input.keyboard.addKey(Phaser.Keyboard.B);
+	this.shopKey3 = game.input.keyboard.addKey(Phaser.Keyboard.C);
+	this.shopKey4 = game.input.keyboard.addKey(Phaser.Keyboard.D);
+	this.shopKeyExit = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
     // UI Code
     this.hitpointsUI = document.getElementById('hitpoints');
@@ -163,9 +170,23 @@ const mainState = {
     game.physics.arcade.overlap(this.player, this.fruit, this.pickUpFruit, null, this);
     game.physics.arcade.overlap(this.player, this.npc, (player, npc) => {this.displayDialogue(player, npc), setTimeout(() => {this.isTalkingToNPC = true;}, 2400)}, null, this);
     if(this.isTalkingToNPC){
-    	console.log('is talking');
     	this.displayShopMenu();
-    	this.isTalkingToNPC = false;
+    	//game.paused = false;
+
+	    console.log('reading input');
+	    this.shopKey1.onDown.add(() => {this.descriptionText.text = 'Weapon choice: A'});
+	    this.shopKey2.onDown.add(() => {this.descriptionText.text = 'Weapon choice: B'});
+	    this.shopKey3.onDown.add(() => {this.descriptionText.text = 'Weapon choice: C'});
+	    this.shopKey4.onDown.add(() => {this.descriptionText.text = 'Weapon choice: D'});
+	    this.shopKeyExit.onDown.add(() => {
+	    	console.log('Exit');
+	    	this.market.visible = false;
+    		this.descriptionText.visible = false;
+    		this.choiceText.visible = false;
+    		this.shopMenu.visible = false;
+    		this.isTalkingToNPC = false;
+    		game.paused = false;
+	    });
     }
     if (game.physics.arcade.overlap(this.player, itemModule.getCoins(), itemModule.pickUpCoin, null, this))
       itemModule.gainGold();
@@ -222,35 +243,36 @@ const mainState = {
    	// Display menu
   	this.market.visible = true;
   	this.shopMenu.visible = true;
+  	this.descriptionText.text = 'Select weapon A~D. Press \'Q\' to exit';
   	this.descriptionText.visible = true;
 
     // Calculate 4 corners of the menu
     var x1 = 150, x2 = 150+512,
     	y1 = 60, y2 = 60+512;
 
-    	console.log(this.isTalkingToNPC);	// not reading input.
     this.choiceText.visible = true;
-    this.choiceText.text = 'Choose your weapon.';
-    if(game.input.activePointer.leftButton.isDown && this.isTalkingToNPC){
-    	var event = game.input.mousePointer;
-    	console.log("input");	// not reading input
-	    if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2){
-	    	var choicemap = ['Group1', 'Group2', 'Group3', 'Group4'];
-	    	var x = game.input.x - x1;
-	    	var y = game.input.y - y1;
-	    	var choice = Math.floor(x/256) + 2*Math.floor(y/256);
-	    	console.log(choice);
-	    	this.choiceText.text = 'Your choice is: ' + choicemap[choice];
-    	}
-    	else{
-    		console.log('Exit');
-    		this.market.visible = false;
-    		this.descriptionText.visible = false;
-    		this.choiceText.visible = false;
-    		this.shopMenu.visible = false;
-    		game.paused = false;
-    	}
-    }
+    this.choiceText.text = 'Choose your weapon. (a,b,c,d)';
+
+    // if(game.input.activePointer.leftButton.isDown){
+    // 	var event = game.input.mousePointer;
+    // 	console.log("input");	// not reading input
+	   //  if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2){
+	   //  	var choicemap = ['Group1', 'Group2', 'Group3', 'Group4'];
+	   //  	var x = game.input.x - x1;
+	   //  	var y = game.input.y - y1;
+	   //  	var choice = Math.floor(x/256) + 2*Math.floor(y/256);
+	   //  	console.log(choice);
+	   //  	this.choiceText.text = 'Your choice is: ' + choicemap[choice];
+    // 	}
+    // 	else{
+    // 		console.log('Exit');
+    // 		this.market.visible = false;
+    // 		this.descriptionText.visible = false;
+    // 		this.choiceText.visible = false;
+    // 		this.shopMenu.visible = false;
+    // 		game.paused = false;
+    // 	}
+    // }
   },
   killEnemy(player, rabbit) {
     // stop the rabbit from approaching the player for the next 0.5 seconds
