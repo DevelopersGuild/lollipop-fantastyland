@@ -11,6 +11,7 @@ const module = {
     this.cursors = cursors;
     this.gun = this.game.add.sprite(this.player.x + this.player.width, this.player.y, 'gun');
     this.gun.anchor.set(0.5, 1);
+    this.gun.name = "gun";
 
     this.bullets = this.game.add.group();
     this.bullets.enableBody = true;
@@ -21,7 +22,6 @@ const module = {
     this.fireTimer = 0;
     this.fireRate = 200;
     this.speed = 800;
-    this.itemType = "weapon";
   },
 
   fire() {

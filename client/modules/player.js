@@ -11,6 +11,7 @@ const playerModule = {
     this.game.load.spritesheet('player', '/assets/player.png', 32, 48);
     this.game.load.image('rifle_thumbnail', '/assets/rifle-thumbnail.png');
     this.state = state;
+
   },
 
   create() {
@@ -48,7 +49,7 @@ const playerModule = {
 
 
     this.inventory = this.game.add.group();
-
+    this.selected = 0;
     //Adding key to toggle inventory
     this.invkey = this.state.input.keyboard.addKey(Phaser.Keyboard.I);
     //Adding keys to select items from topbar display of inventory
@@ -81,13 +82,16 @@ const playerModule = {
     //Topbar for inventory items
     this.TOPBAR_OFFSET = (this.game.width-(5*50))/2;
     this.topbarBmd = this.game.make.bitmapData(800, 100);
-    for (let i = 0; i < this.inventory.children.length; i++) {
+/*    for (let i = 0; i < this.inventory.children.length; i++) {
       this.topbarBmd.rect(this.TOPBAR_OFFSET+i*50,20,32,32, '#666666');
-      this.inventoryBmd.draw(this.inventroy.children[i])
-    }
+      this.inventoryBmd.draw(this.inventory.children[i], this.TOPBAR_OFFSET+i*50, 20);
+    }*/
+
 
     this.topbarUi = this.game.add.sprite(0, 0, this.topbarBmd);
     this.topbarUi.fixedToCamera = true;
+
+    this.drawTopBar();
   //Inventory grid
 /*
     this.inventoryBmd = this.game.make.bitmapData(800,600);
@@ -179,31 +183,51 @@ const playerModule = {
     this.player.y = y;
     this.player.visibility = true;
   },
-  applyHealthBuff(item) {
-    this.player.health += item.healthEffect;
+  applyHealthBuff(health, index) {
+    this.player.health += health;
     if (this.player.health > 100) {
       this.player.health = 100;
     }
-
-    item.kill();
+    this.inventory.removeChildAt(index);
+    this.selected = 0;
+    this.drawTopBar();
   },
   pickUpItem(item) {
-    switch(item.itemType) {
-        case 'healthEdible': this.applyHealthBuff(item);
-        default: this.inventory.add(item); break;
+    if (this.inventory.children.length+1 > 5)
+      return;
+    this.inventory.add(item);
+    console.log(item.name);
+    switch (item.name) {
+      case "fruit": item.kill(); break;
+      default: break;
     }
+    this.drawTopBar();
+
   },
 
   equip(item_index) {
     if (item_index >= this.inventory.length)
       return;
-    this.topbarBmd.clear();
-    this.topbarBmd.rect((this.TOPBAR_OFFSET-2)+item_index*50, 18, 36, 36,'#FF0000');
-    for (let i = 0; i < this.inventory.children.length; i++) {
-      this.topbarBmd.rect(this.TOPBAR_OFFSET+i*50,20,32,32, '#666666');
-      this.topbarBmd.draw(this.inventory.children[i], this.TOPBAR_OFFSET+i*50,20);
+    this.selected = item_index;
+    this.drawTopBar();
+    switch (this.inventory.children[item_index].name) {
+      case 'fruit': this.applyHealthBuff(20, item_index); break;
+      default: break;
     }
 
+
+
+  },
+  drawTopBar() {
+    this.topbarBmd.clear();
+    this.topbarBmd.rect((this.TOPBAR_OFFSET-2)+this.selected*50, 18, 36, 36,'#FF0000');
+    for (let i = 0; i < this.inventory.children.length; i++) {
+      this.topbarBmd.rect(this.TOPBAR_OFFSET+i*50,20,32,32, '#666666');
+      if (this.inventory.children[i].name == "gun")
+        this.topbarBmd.draw(this.rifle_thumbnail, this.TOPBAR_OFFSET+i*50,20);
+      else
+        this.topbarBmd.draw(this.inventory.children[i], this.TOPBAR_OFFSET+i*50,20);
+    }
     this.topbarUi.loadTexture(this.topbarBmd);
 
   },

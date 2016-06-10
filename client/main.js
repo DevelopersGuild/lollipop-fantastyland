@@ -74,6 +74,7 @@ const mainState = {
     this.backgroundMusic.play('', 0, 0, false);
 
     this.fruit = game.add.sprite(300, 300, 'fruit');
+    this.fruit.name = "fruit";
     game.physics.arcade.enable(this.fruit);
     this.fruit.body.collideWorldBounds = true;
     this.fruit.healthEffect = 25;
@@ -131,7 +132,7 @@ const mainState = {
 
     this.ui.loadTexture(this.bmd);*/
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
-    game.physics.arcade.overlap(this.player, this.fruit, playerModule.pickUpItem(this.fruit), null, this);
+    game.physics.arcade.overlap(this.player, this.fruit, function(e){playerModule.pickUpItem(this.fruit);}, null, this);
     game.physics.arcade.overlap(this.player, this.npc, this.displayDialogue, null, this);
 
     if (!monsterModule.getAggroState()) {
