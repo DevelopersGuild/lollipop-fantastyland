@@ -107,22 +107,19 @@ const mainState = {
     this.descriptionText.visible = false;
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-
-  /*  this.topbar = game.add.image(20, 20, 'topbar');
-    this.topbar.x = game.width/2 - this.topbar.width/2;
-    console.log(this.topbar.x);*/
-
     playerModule.pickUpItem(gunModule.getGun());
-    this.spaceKey.onDown.add(function () {
+    this.spaceKey.onDown.add(() => {
       // When the pause  button is pressed, game is paused
       // menu
       mainState.togglePause();
-      if (game.paused == true && !this.isTalkingToNPC) {
+     
+     
+      if (game.paused == true) {
          console.log("game paused true");
-         mainState.menu = game.add.sprite(270, 235, 'menu');
+         this.pauseMenu.visible = true;
       } else {
           console.log("game paused false");
-          mainState.menu.destroy();
+          this.pauseMenu.visible = false;
       }
     });
 
@@ -134,6 +131,10 @@ const mainState = {
 
     // UI Code
     this.hitpointsUI = document.getElementById('hitpoints');
+
+    this.pauseMenu = game.add.sprite(270, 235, 'menu');
+    this.pauseMenu.visible = false;
+    this.pauseMenu.fixedToCamera = true;
   },
 
 
