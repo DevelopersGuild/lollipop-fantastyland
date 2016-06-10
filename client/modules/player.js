@@ -110,7 +110,6 @@ const playerModule = {
 
 
     // Player animations
-    this.player.animations.add('stop', [0], 1, true);
     this.player.animations.add('down', [0, 1, 2, 3], 10, true);
     this.player.animations.add('left', [4, 5, 6, 7], 10, true);
     this.player.animations.add('right', [8, 9, 10, 11], 10, true);
@@ -161,7 +160,7 @@ const playerModule = {
         this.player.animations.play('right');
       }
     } else {
-      this.player.animations.play('stop');
+      this.player.animations.stop(null, true);
     }
 
     if (this.player.exp >= 100) {
