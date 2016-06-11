@@ -11,8 +11,9 @@ window.Phaser = require('phaser/build/custom/phaser-split');
 const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 let w = 800;
 let h = 640;
+
 const pauseMenu = {
-  unpause(event) {   
+  unpause(event) {
     // Only act if paused
     if (game.paused) {
       // Calculate corners of the menu
@@ -27,7 +28,7 @@ const pauseMenu = {
           mainState.menu.destroy();
           // Unpause the game
           game.paused = false;
-         
+
       }
     }
   }
@@ -129,15 +130,15 @@ const mainState = {
     this.market = game.add.sprite(0, 0, 'market');
     this.market.visible = false;
     this.shopMenu = game.add.sprite(150, 60, 'shopMenu');
-    this.shopMenu.scale.setTo(.8, .8);
+    this.shopMenu.scale.setTo(0.8, 0.8);
     this.shopMenu.visible = false;
     this.descriptionText = game.add.text(180, 570, '');
     this.descriptionText.visible = false;
     this.shopKey1 = game.input.keyboard.addKey(Phaser.Keyboard.A);
-	this.shopKey2 = game.input.keyboard.addKey(Phaser.Keyboard.B);
-	this.shopKey3 = game.input.keyboard.addKey(Phaser.Keyboard.C);
-	this.shopKey4 = game.input.keyboard.addKey(Phaser.Keyboard.D);
-	this.shopKeyExit = game.input.keyboard.addKey(Phaser.Keyboard.Q);
+    this.shopKey2 = game.input.keyboard.addKey(Phaser.Keyboard.B);
+    this.shopKey3 = game.input.keyboard.addKey(Phaser.Keyboard.C);
+    this.shopKey4 = game.input.keyboard.addKey(Phaser.Keyboard.D);
+    this.shopKeyExit = game.input.keyboard.addKey(Phaser.Keyboard.Q);
 
     // UI Code
     this.hitpointsUI = document.getElementById('hitpoints');
@@ -146,7 +147,7 @@ const mainState = {
 
   update() {
     // Modules
-    playerModule.update(); 
+    playerModule.update();
     gunModule.update();
     levelModule.update();
     monsterModule.update();
@@ -198,7 +199,7 @@ const mainState = {
       itemModule.gainCap();
 
     if (!monsterModule.getAggroState()) {
-      if (this.backgroundMusic.volume <= 0.1) {
+      if (this.backgroundMusic.volume <= 0.05) {
         this.backgroundMusic.fadeTo(1000, 1);
         this.battleMusic.fadeOut(1000);
       }
