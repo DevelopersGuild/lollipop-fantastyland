@@ -172,7 +172,7 @@ const playerModule = {
     if (this.player.health <= 0) {
       this.player.health = 0;
       this.player.kill();
-      this.gameOverText = this.game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+      this.gameOverText = this.game.add.text(this.game.camera.x + 200, this.game.camera.y + 250, "Game Over", { fontSize: '64px', fill: 'red'});
     }
   },
 

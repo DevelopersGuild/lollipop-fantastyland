@@ -41,6 +41,10 @@ const module = {
     	this.gelText.text = `Slime Gel: ${this.numOfGels}`;
     	this.capText.text = `Mushroom Cap: ${this.numOfCaps}`;
 
+    	this.goldText.x = this.game.camera.x + 16;
+    	this.meatText.x = this.game.camera.x + 16;
+    	this.gelText.x = this.game.camera.x + 16;
+    	this.capText.x = this.game.camera.x + 16;
     	this.goldText.y = this.game.camera.y + 64;
     	this.meatText.y = this.game.camera.y + 80;
     	this.gelText.y = this.game.camera.y + 96;

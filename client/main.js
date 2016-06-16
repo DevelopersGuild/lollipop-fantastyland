@@ -107,7 +107,7 @@ const mainState = {
       mainState.togglePause();
       if (game.paused == true) {
          console.log("game paused true");
-         mainState.menu = game.add.sprite(270, 235, 'menu');
+         mainState.menu = game.add.sprite(270 + game.camera.x, 235 + game.camera.y, 'menu');
       } else {
           console.log("game paused false");
           mainState.menu.destroy();
@@ -164,6 +164,9 @@ const mainState = {
     this.ui.loadTexture(this.bmd);*/
     game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
     game.physics.arcade.overlap(this.player, this.fruit, function(e){playerModule.pickUpItem(this.fruit);}, null, this);
+    this.levelText.x = game.camera.x + 16;
+    this.healthText.x = game.camera.x + 16;
+    this.expText.x = game.camera.x + 16;
     this.levelText.y = game.camera.y + 16;
     this.healthText.y = game.camera.y + 32;
     this.expText.y = game.camera.y + 48;
