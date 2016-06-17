@@ -34,7 +34,7 @@ const module = {
     this.shotgun_shells.makeParticles('shotgun-shell');
 
     this.fireTimer = 0;
-    this.fireRate = 2000;
+    this.fireRate = 200000;
     this.speed = 1600;
     this.type = "shotgun";
   },
@@ -79,8 +79,8 @@ const module = {
   },
 
   update() {
-    this.gun.x = this.player.x;
-    this.gun.y = this.player.y;
+    this.fireRate = 200 + 1500 / (this.player.dexterity + 4);
+    this.speed = 450 + this.player.strength * 50;
     let dx = 0;
     let dy = 0;
     let angle = this.gun.rotation-(Math.PI/2);
@@ -108,6 +108,11 @@ const module = {
     if (this.fire_key.isDown) {
       this.fire(dx, dy);
     }
+    this.bullets.children.forEach((bullet) => {
+      if (this.game.physics.arcade.distanceBetween(this.gun, bullet) > 375) {
+        bullet.kill();
+      }
+    });
   },
 
 

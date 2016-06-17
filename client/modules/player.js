@@ -43,19 +43,37 @@ const playerModule = {
     this.s = this.state.input.keyboard.addKey(Phaser.Keyboard.S);
     this.d = this.state.input.keyboard.addKey(Phaser.Keyboard.D);
     this.cursors = this.state.input.keyboard.createCursorKeys();
+    this.t = this.state.input.keyboard.addKey(Phaser.Keyboard.T);
+    this.e = this.state.input.keyboard.addKey(Phaser.Keyboard.E);
+    this.v = this.state.input.keyboard.addKey(Phaser.Keyboard.V);
 
     // Initialize Level
     this.player.level = 1;
 
     // Initialize Health
-    this.player.health = 100;
+    this.player.maxHealth = 20;
+    this.player.health = 20;
 
     // Initialize EXP
     this.player.exp = 0;
+    this.player.expRequired = 20;
+
+    this.player.strength = 1;
+    this.player.dexterity = 1;
+    this.player.vitality = 1;
+    this.player.abilityPoints = 0;
 
     this.fireRate = 200;
     this.nextFire = 0;
 
+    this.abilityPointsText = this.game.add.text(16, 48, 'Ability Points: 0', { fontSize: '16px', fill: '#670' });
+    this.strengthText = this.game.add.text(16, 64, 'Strength(T): 1', { fontSize: '16px', fill: '#670' });
+    this.dexterityText = this.game.add.text(16, 80, 'Dexterity(E): 1', { fontSize: '16px', fill: '#670' });
+    this.vitalityText = this.game.add.text(16, 96, 'Vitality(V): 1', { fontSize: '16px', fill: '#670' });
+    this.abilityPointsText.fixedToCamera = true;
+    this.strengthText.fixedToCamera = true;
+    this.dexterityText.fixedToCamera = true;
+    this.vitalityText.fixedToCamera = true;
 
     this.inventory = this.game.add.group();
     this.selected = 0;
@@ -88,6 +106,27 @@ const playerModule = {
     this.fourkey.onDown.add(this.equip(3));
     this.fivekey.onDown.add(this.equip(4));*/
 
+    this.t.onDown.add(function(e) {
+      if (this.player.abilityPoints > 0) {
+        this.player.strength++;
+        this.player.abilityPoints--;
+      }
+    }, this);
+
+    this.e.onDown.add(function(e) {
+      if (this.player.abilityPoints > 0) {
+        this.player.dexterity++;
+        this.player.abilityPoints--;
+      }
+    }, this);
+
+    this.v.onDown.add(function(e) {
+      if (this.player.abilityPoints > 0) {
+        this.player.vitality++;
+        this.player.abilityPoints--;
+        this.player.heal(3);
+      }
+    }, this);
 
     //Topbar for inventory items
     this.TOPBAR_OFFSET = (this.game.width-(5*50))/2;
@@ -128,24 +167,26 @@ const playerModule = {
 
 
   update() {
+    this.player.maxHealth = 15 + this.player.vitality * 5;
+
     if (this.player.body.velocity.x > 0) {
-      this.player.body.acceleration.x = -500;
+      this.player.body.acceleration.x =  -200 - this.player.dexterity * 20;
     }
 
     if (this.player.body.velocity.x < 0) {
-      this.player.body.acceleration.x = 500;
+      this.player.body.acceleration.x = 200 + this.player.dexterity * 20;
     }
 
     if (this.player.body.velocity.y > 0) {
-      this.player.body.acceleration.y = -500;
+      this.player.body.acceleration.y = -200 - this.player.dexterity * 20;
     }
 
     if (this.player.body.velocity.y < 0) {
-      this.player.body.acceleration.y = 500;
+      this.player.body.acceleration.y = 200 + this.player.dexterity * 20;
     }
 
-    this.player.body.maxVelocity.x = 200;
-    this.player.body.maxVelocity.y = 200;
+    this.player.body.maxVelocity.x = 150 + this.player.dexterity * 10;
+    this.player.body.maxVelocity.y = 150 + this.player.dexterity * 10;
 
     if (this.a.isDown) {
       this.player.body.acceleration.x = -500;
@@ -180,30 +221,37 @@ const playerModule = {
       this.player.animations.stop(null, true);
     }
 
-    if (this.player.exp >= 100) {
+    if (this.player.exp >= this.player.expRequired) {
       this.player.level++;
-      this.player.exp -= 100;
+      this.player.abilityPoints++;
+      this.player.exp -= this.player.expRequired;
+      this.player.expRequired += 20;
+      this.player.heal(this.player.maxHealth / 5);
       this.levelUpText = this.game.add.text(this.player.x, this.player.y - 50, 'Level Up!', { fontSize: '16px', fill: 'yellow' });
       destroyText(this.levelUpText);
     }
     if (this.player.health <= 0) {
       this.player.health = 0;
       this.player.kill();
-      this.gameOverText = this.game.add.text(200, 250, "Game Over", { fontSize: '64px', fill: 'red'});
+      this.gameOverText = this.game.add.text(this.game.camera.x + 200, this.game.camera.y + 250, "Game Over", { fontSize: '64px', fill: 'red'});
     }
+
+    this.abilityPointsText.text = `Ability Points: ${this.player.abilityPoints}`;
+    this.strengthText.text = `Strength(T): ${this.player.strength}`;
+    this.dexterityText.text = `Dexterity(E): ${this.player.dexterity}`;
+    this.vitalityText.text = `Vitality(V): ${this.player.vitality}`;
   },
 
   respawn(x, y) {
-    this.player.health = 100;
+    this.player.health = this.player.maxHealth;
     this.player.x = x;
     this.player.y = y;
     this.player.visibility = true;
   },
   applyHealthBuff(health, index) {
-    this.player.health += health;
-    if (this.player.health > 100) {
-      this.player.health = 100;
-    }
+    this.player.heal(health);
+    const healText = this.game.add.text(this.player.x, this.player.y, `+${health}`, { fontSize: '16px', fill: 'green' });
+    destroyText(healText);
     this.inventory.removeChildAt(index);
     this.selected = 0;
     this.drawTopBar();
