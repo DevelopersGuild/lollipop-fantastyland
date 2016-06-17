@@ -26,7 +26,7 @@ const module = {
 
     this.bullets = this.game.add.group();
     this.bullets.enableBody = true;
-    this.bullets.createMultiple(50, 'bullet');
+    this.bullets.createMultiple(500, 'bullet');
     this.bullets.setAll('checkWorldBounds', true);
     this.bullets.setAll('outOfBoundsKill', true);
 
