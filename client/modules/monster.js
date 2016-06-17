@@ -156,7 +156,7 @@ const module = {
     this.slimes = this.game.add.group(this.monsters, 'slimes', false, true);
     this.mushrooms = this.game.add.group(this.monsters, 'mushrooms', false, true);
     this.unicorns = this.game.add.group(this.monsters, 'unicorn', false, true);
-    this.createUnicorn(800, 100);
+    this.createUnicorn(1300, 800);
     this.rainbowUnicorn = this.game.add.sprite(1000, 2000, 'rainbowUnicorn');
     this.rainbowUnicorn.anchor.set(0.6, 0.5);
     this.rainbowUnicorn.animations.add('charge', [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 10, true);
