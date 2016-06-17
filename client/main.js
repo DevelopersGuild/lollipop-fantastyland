@@ -74,8 +74,11 @@ const mainState = {
     itemModule.create();
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
-    this.healthText = game.add.text(16, 32, 'Health: 100', { fontSize: '16px', fill: '#670' });
-    this.expText = game.add.text(16, 48, 'Exp: 0', { fontSize: '16px', fill: '#670' });
+    this.expText = game.add.text(16, 32, 'Exp: 0/20', { fontSize: '16px', fill: '#670' });
+    this.healthText = game.add.text(215, 610, '20/20', { fontSize: '16px', fill: 'white' });
+    this.levelText.fixedToCamera = true;
+    this.expText.fixedToCamera = true;
+    this.healthText.fixedToCamera = true;
 
     // Music
     this.backgroundMusic = game.add.audio('bgm');
@@ -153,11 +156,12 @@ const mainState = {
     levelModule.update();
     monsterModule.update();
     itemModule.update();
+    this.player = playerModule.getPlayer();
 
     // TEMP
-    this.levelText.text = `Level: ${playerModule.getLevel()}`;
-    this.healthText.text = `Health: ${playerModule.getHealth()}`;
-    this.expText.text = `Exp: ${playerModule.getExp()}`;
+    this.levelText.text = `Level: ${this.player.level}`;
+    this.expText.text = `Exp: ${this.player.exp}/${this.player.expRequired}`;
+    this.healthText.text = `${this.player.health}/${this.player.maxHealth}`;
     /*this.bmd.ctx.fillText(`Level: ${playerModule.getLevel()}`, 30, 30);
     this.bmd.ctx.fillText(`Health: ${playerModule.getHealth()}`, 30, 60);
     this.bmd.ctx.fillText(`Exp: ${playerModule.getExp()}`, 30, 90);
@@ -213,7 +217,7 @@ const mainState = {
         this.backgroundMusic.fadeTo(1, 0.01);
       }
     }
-    this.hitpointsUI.style.width = `${playerModule.getHealth() / 100 * 180}px`;
+    this.hitpointsUI.style.width = `${180 * this.player.health / this.player.maxHealth}px`;
   },
   togglePause() {
     game.paused = !game.paused;

@@ -25,14 +25,14 @@ function shootEnemy(bullet, rabbit) {
   // kill the bullet
   bullet.kill();
   // deal damage to the rabbit
-  rabbit.health--;
+  rabbit.health -= this.player.strength + 2;
   // show text when hit
-  const hitText = this.game.add.text(rabbit.x, rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
+  const hitText = this.game.add.text(rabbit.x, rabbit.y, `-${this.player.strength + 2}`, { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   // stop the rabbit from approaching the player for the next 0.1 seconds
   rabbit.nextMove = this.game.time.now + 100;
   // Kill enemy if enemyHp is 0.
-  if (rabbit.health === 0) {
+  if (rabbit.health <= 0) {
     this.player.exp += 10;  // Increment exp value
     itemModule.rabbitDrop(rabbit);
     rabbit.destroy();
@@ -52,10 +52,10 @@ function getShot(player, projectile) {
 
 function shootSlime(bullet, slime) {
   bullet.kill();
-  slime.health--;
-  const hitText = this.game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
+  slime.health -= this.player.strength + 2;
+  const hitText = this.game.add.text(slime.x, slime.y, `-${this.player.strength + 2}`, { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
-  if (slime.health === 0) {
+  if (slime.health <= 0) {
     this.player.exp += 15;
     itemModule.slimeDrop(slime);
     slime.slimeball.destroy();
@@ -65,11 +65,11 @@ function shootSlime(bullet, slime) {
 
 function shootMushroom(bullet, mushroom) {
   bullet.kill();
-  mushroom.health--;
-  const hitText = this.game.add.text(mushroom.x, mushroom.y, '-1', { fontSize: '16px', fill: 'red' });
+  mushroom.health -= this.player.strength + 2;
+  const hitText = this.game.add.text(mushroom.x, mushroom.y, `-${this.player.strength + 2}`, { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
-  if (mushroom.health === 0) {
-    this.player.exp += 50;
+  if (mushroom.health <= 0) {
+    this.player.exp += 30;
     itemModule.mushroomDrop(mushroom);
     mushroom.shockwave.destroy();
     mushroom.destroy();
@@ -86,11 +86,11 @@ function hitMushroom(player, mushroom) {
 
 function shootUnicorn(bullet, unicorn) {
   bullet.kill();
-  unicorn.health--;
-  const hitText = this.game.add.text(unicorn.x, unicorn.y, '-1', { fontSize: '16px', fill: 'red' });
+  unicorn.health -= this.player.strength + 2;
+  const hitText = this.game.add.text(unicorn.x, unicorn.y, `-${this.player.strength + 2}`, { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
-  if (unicorn.health === 0) {
-    this.player.exp += 500;
+  if (unicorn.health <= 0) {
+    this.player.exp += 300;
     unicorn.animations.play('die');
     unicorn.destroy();
     this.starfall = false;
@@ -191,12 +191,14 @@ const module = {
           slime.nextShoot = this.game.time.now + 1000;
         }
       }
+      if (this.game.physics.arcade.distanceBetween(slime, slime.slimeball) > 400)
+        slime.slimeball.kill();
     });
 
     this.mushrooms.children.forEach((mushroom) => {
       if (this.game.time.now > mushroom.nextMove) {
         if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 375) {
-          this.game.physics.arcade.moveToObject(mushroom, this.player, 150);
+          this.game.physics.arcade.moveToObject(mushroom, this.player, 180);
           mushroom.animations.play('move');
         } else {
           this.game.physics.arcade.moveToObject(mushroom, this.player, 0);
@@ -209,14 +211,14 @@ const module = {
         mushroom.body.velocity.y = 0;
         mushroom.animations.play('jump');
       }
-      if (this.game.time.now > mushroom.nextJump) {
+      if (this.game.time.now > mushroom.nextJump && this.game.physics.arcade.distanceBetween(this.player, mushroom) < 160) {
         setTimeout(() => {
           if (!this.game.paused) {
             mushroom.shockwave.reset(mushroom.x - 140, mushroom.y - 140);
             mushroom.shockwave.alpha = 1;
             if (this.game.physics.arcade.distanceBetween(this.player, mushroom) < 160) {
               this.player.health -= 3;
-              this.game.physics.arcade.moveToObject(player, mushroom, -200);
+              this.game.physics.arcade.moveToObject(this.player, mushroom, -200);
               const hitText = this.game.add.text(this.player.x, this.player.y, '-3', { fontSize: '16px', fill: 'red' });
               destroyText(hitText);
             }
@@ -230,7 +232,7 @@ const module = {
 
     this.unicorns.children.forEach((unicorn) => {
       if (this.game.physics.arcade.distanceBetween(this.player, unicorn) < 375) unicorn.aggro = true;
-      if (unicorn.health < 50) this.starfall = true;
+      if (unicorn.health < 250) this.starfall = true;
       if (unicorn.charging) {
         this.rainbowUnicorn.x = unicorn.x;
         this.rainbowUnicorn.y = unicorn.y;
@@ -369,7 +371,7 @@ const module = {
 
   createRabbit(x, y) {
     const rabbit = this.rabbits.create(x, y, 'rabbit');
-    rabbit.health = 3;
+    rabbit.health = 20;
     rabbit.nextMove = 0;
     rabbit.animations.add('down', [0, 1, 2], 10, true);
     rabbit.animations.add('left', [3, 4, 5], 10, true);
@@ -379,7 +381,7 @@ const module = {
 
   createSlime(x, y) {
     const slime = this.slimes.create(x, y, 'slime');
-    slime.health = 3;
+    slime.health = 20;
     slime.nextShoot = 0;
     slime.animations.add('move', [2, 3], 5, true);
     slime.animations.add('shoot', [4, 5], 5, true);
@@ -391,7 +393,7 @@ const module = {
   createMushroom(x, y) {
     const mushroom = this.mushrooms.create(x, y, 'mushroom');
     mushroom.anchor.set(0.5, 0.5);
-    mushroom.health = 8;
+    mushroom.health = 50;
     mushroom.nextMove = 0;
     mushroom.nextJump = 0;
     mushroom.animations.add('move', [0, 1, 2, 3], 10, true);
@@ -403,7 +405,7 @@ const module = {
   createUnicorn(x, y) {
     const unicorn = this.unicorns.create(x, y, 'unicorn');
     unicorn.anchor.set(0.25, 0.5);
-    unicorn.health = 100;
+    unicorn.health = 500;
     unicorn.nextAttack = 0;
     unicorn.nextCharge = 0;
     unicorn.charging = false;

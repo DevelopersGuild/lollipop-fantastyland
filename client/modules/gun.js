@@ -21,7 +21,7 @@ const module = {
 
     this.fireTimer = 0;
     this.fireRate = 200;
-    this.speed = 800;
+    this.speed = 500;
   },
 
   fire() {
@@ -42,6 +42,8 @@ const module = {
   },
 
   update() {
+    this.fireRate = 200 + 1500 / (this.player.dexterity + 4);
+    this.speed = 450 + this.player.strength * 50;
     this.gun.x = this.player.x + this.player.width;
     this.gun.y = this.player.y;
     if (this.cursors.up.isDown || this.cursors.right.isDown || this.cursors.left.isDown || this.cursors.down.isDown) {

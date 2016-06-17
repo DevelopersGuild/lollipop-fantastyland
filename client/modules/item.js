@@ -29,10 +29,14 @@ const module = {
     	this.numOfGels = 0;
     	this.numOfCaps = 0;
 
-    	this.goldText = this.game.add.text(16, 64, 'Gold: 0', { fontSize: '16px', fill: '#670' });
-    	this.meatText = this.game.add.text(16, 80, 'Rabbit Meat: 0', { fontSize: '16px', fill: '#670' });
-    	this.gelText = this.game.add.text(16, 96, 'Slime Gel: 0', { fontSize: '16px', fill: '#670' });
-    	this.capText = this.game.add.text(16, 112, 'Mushroom Cap: 0', { fontSize: '16px', fill: '#670' });
+    	this.goldText = this.game.add.text(16, 144, 'Gold: 0', { fontSize: '16px', fill: '#670' });
+    	this.meatText = this.game.add.text(16, 160, 'Rabbit Meat: 0', { fontSize: '16px', fill: '#670' });
+    	this.gelText = this.game.add.text(16, 176, 'Slime Gel: 0', { fontSize: '16px', fill: '#670' });
+    	this.capText = this.game.add.text(16, 192, 'Mushroom Cap: 0', { fontSize: '16px', fill: '#670' });
+    	this.goldText.fixedToCamera = true;
+    	this.meatText.fixedToCamera = true;
+    	this.gelText.fixedToCamera = true;
+    	this.capText.fixedToCamera = true;
 	},
 
 	update() {
@@ -40,15 +44,6 @@ const module = {
     	this.meatText.text = `Rabbit Meat: ${this.numOfMeats}`;
     	this.gelText.text = `Slime Gel: ${this.numOfGels}`;
     	this.capText.text = `Mushroom Cap: ${this.numOfCaps}`;
-
-    	this.goldText.x = this.game.camera.x + 16;
-    	this.meatText.x = this.game.camera.x + 16;
-    	this.gelText.x = this.game.camera.x + 16;
-    	this.capText.x = this.game.camera.x + 16;
-    	this.goldText.y = this.game.camera.y + 64;
-    	this.meatText.y = this.game.camera.y + 80;
-    	this.gelText.y = this.game.camera.y + 96;
-    	this.capText.y = this.game.camera.y + 112;
 	},
 
     pickUpCoin(player, coin) {
