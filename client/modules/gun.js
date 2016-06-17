@@ -47,6 +47,11 @@ const module = {
     if (this.cursors.up.isDown || this.cursors.right.isDown || this.cursors.left.isDown || this.cursors.down.isDown) {
       this.fire();
     }
+    this.bullets.children.forEach((bullet) => {
+      if (this.game.physics.arcade.distanceBetween(this.gun, bullet) > 375) {
+        bullet.kill();
+      }
+    });
   },
 
 
