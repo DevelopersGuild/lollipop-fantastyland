@@ -2,20 +2,38 @@ import gunModule from './gun';
 import playerModule from './player';
 import itemModule from './item';
 
+let gore_emitter;
+
 function destroyText(text) {
   setTimeout(() => {
     text.destroy();
   }, 1000);
 }
 
+
+function gorify(x,y, vx, vy, amt) {
+  // Start gore emitter
+  gore_emitter.x = x;
+  gore_emitter.y = y;
+  gore_emitter.setXSpeed(vx*.50, vx*1.50);
+  gore_emitter.setYSpeed(vy*.50, vy*1.50);
+
+  gore_emitter.start(true, 200, null, amt);
+}
+
 function killEnemy(player, rabbit) {
   // stop the rabbit from approaching the player for the next 0.5 seconds
   rabbit.nextMove = this.game.time.now + 500;
+  // player gets visibly injured
+  gorify(player.x, player.y, rabbit.body.velocity.x*4, rabbit.body.velocity.y*4, 40);
+
   // player and rabbit are knocked back
   this.game.physics.arcade.moveToObject(rabbit, player, -100);
   this.game.physics.arcade.moveToObject(player, rabbit, -200);
   // deal damage to the player
   player.health--;
+
+
   // show text when hit
   const hitText = this.game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
@@ -25,12 +43,16 @@ function shootEnemy(bullet, rabbit) {
   // kill the bullet
   bullet.kill();
   // deal damage to the rabbit
-  rabbit.health--;
+  rabbit.health-=1;
+
+  gorify(rabbit.x, rabbit.y, bullet.body.velocity.x, bullet.body.velocity.y, 200);
+
   // show text when hit
   const hitText = this.game.add.text(rabbit.x, rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   // stop the rabbit from approaching the player for the next 0.1 seconds
   rabbit.nextMove = this.game.time.now + 100;
+
   // Kill enemy if enemyHp is 0.
   if (rabbit.health === 0) {
     this.player.exp += 10;  // Increment exp value
@@ -45,6 +67,7 @@ function getShot(player, projectile) {
   projectile.body.velocity.x = 0;
   projectile.body.velocity.y = 0;
   player.health--;
+  gorify(player.x, player.y, projectile.body.velocity.x, projectile.body.velocity.y, 30);
   this.game.physics.arcade.moveToObject(player, projectile, -100);
   const hitText = this.game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
@@ -53,6 +76,7 @@ function getShot(player, projectile) {
 function shootSlime(bullet, slime) {
   bullet.kill();
   slime.health--;
+  gorify(slime.x, slime.y, bullet.body.velocity.x/4, bullet.body.velocity.y/4, 50);
   const hitText = this.game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (slime.health === 0) {
@@ -66,6 +90,8 @@ function shootSlime(bullet, slime) {
 function shootMushroom(bullet, mushroom) {
   bullet.kill();
   mushroom.health--;
+  gorify(mushroom.x, mushroom.y, bullet.body.velocity.x, bullet.body.velocity.y, 200);
+
   const hitText = this.game.add.text(mushroom.x, mushroom.y, '-1', { fontSize: '16px', fill: 'red' });
   destroyText(hitText);
   if (mushroom.health === 0) {
@@ -95,7 +121,8 @@ const module = {
     this.game.load.spritesheet('mushroom', '/assets/mushroom.png', 68, 60);
     this.game.load.image('shockwave', '/assets/shockwave.png');
   },
-  create() {
+  create(gore) {
+    gore_emitter = gore;
     this.player = playerModule.getPlayer();
     this.gunBullets = gunModule.getBullets();
 

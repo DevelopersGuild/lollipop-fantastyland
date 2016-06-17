@@ -9,18 +9,27 @@ const playerModule = {
   preload(game, state) {
     this.game = game;
     this.game.load.spritesheet('player', '/assets/player.png', 32, 48);
-    this.game.load.image('rifle_thumbnail', '/assets/rifle-thumbnail.png');
+    this.game.load.image('rifle-thumbnail', '/assets/rifle-thumbnail.png');
+    this.game.load.image('shotgun-thumbnail', '/assets/shotgun-thumbnail.png');
     this.state = state;
+
 
   },
 
   create() {
     this.player = this.game.add.sprite(0, 0, 'player');
-    this.rifle_thumbnail = this.game.add.sprite(0,0,'rifle_thumbnail');
+
+    this.rifle_thumbnail = this.game.add.sprite(0,0,'rifle-thumbnail');
+    this.rifle_thumbnail.name = "rifle";
+
+    this.shotgun_thumbnail = this.game.add.sprite(0,0,'shotgun-thumbnail');
+    this.shotgun_thumbnail.name = "shotgun";
 
     this.game.physics.arcade.enable(this.player);
     this.player.anchor.setTo(0.5, 0.5);
     this.player.body.collideWorldBounds = true;
+
+    this.gun;
   //  this.player.body.allowRotation = false;
 
     this.bullets = this.game.add.group();
@@ -50,6 +59,7 @@ const playerModule = {
 
     this.inventory = this.game.add.group();
     this.selected = 0;
+    this.inventory.add(this.shotgun_thumbnail);
     //Adding key to toggle inventory
     this.invkey = this.state.input.keyboard.addKey(Phaser.Keyboard.I);
     //Adding keys to select items from topbar display of inventory
@@ -152,23 +162,20 @@ const playerModule = {
     if (this.a.isDown || this.d.isDown || this.w.isDown || this.s.isDown) {
       if (this.w.isDown) {
         this.player.animations.play('up');
-        this.inventory.children[this.selected].rotation = 0;
-        this.inventory.children[this.selected].y += 10;
+        this.gun.rotation = 0;
       } else if (this.s.isDown) {
         this.player.animations.play('down');
-        this.inventory.children[this.selected].rotation = Math.PI;
-        this.inventory.children[this.selected].y -= 10;
+        this.gun.rotation = Math.PI;
 
       } else if (this.a.isDown) {
         this.player.animations.play('left');
-        this.inventory.children[this.selected].rotation = 3*Math.PI/2;
-        this.inventory.children[this.selected].x -= 10;
+        this.gun.rotation = 3*Math.PI/2;
 
       } else if (this.d.isDown) {
         this.player.animations.play('right');
-        this.inventory.children[this.selected].rotation = Math.PI/2;
-        this.inventory.children[this.selected].x += 10;
+        this.gun.rotation = Math.PI/2;
       }
+
     } else {
       this.player.animations.stop(null, true);
     }
@@ -205,13 +212,16 @@ const playerModule = {
     if (this.inventory.children.length+1 > 5)
       return;
     this.inventory.add(item);
-    console.log(item.name);
     switch (item.name) {
-      case "fruit": item.kill(); break;
+      case "fruit": item.kill();
+      break;
       default: break;
     }
     this.drawTopBar();
 
+  },
+  setGun(gun) {
+    this.gun = gun;
   },
 
   equip(item_index) {
@@ -223,8 +233,6 @@ const playerModule = {
       case 'fruit': this.applyHealthBuff(20, item_index); break;
       default: break;
     }
-
-
 
   },
   drawTopBar() {

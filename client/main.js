@@ -49,12 +49,16 @@ const mainState = {
 
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
+    game.load.image('gore', 'assets/gore.png');
+
+
 
     game.load.image('shopMenu', '/assets/shopMenu.png');
     game.load.image('market', '/assets/marketbcg.jpg');
     game.load.image('menu', 'assets/number-buttons-90x90.png', 270, 180);
     game.load.audio('bgm', 'assets/bgm.mp3');
     game.load.audio('battle', 'assets/battle.mp3');
+
   },
   create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -65,7 +69,13 @@ const mainState = {
     this.player = playerModule.getPlayer();
     game.camera.follow(this.player);
     gunModule.create(this.player, playerModule.getCursors());
-    monsterModule.create();
+    playerModule.setGun(gunModule.getGun());
+    this.gore = game.add.emitter(0,0, 2000);
+    this.gore.setXSpeed(-1000, 1000);
+    this.gore.setYSpeed(-1000,1000);
+    this.gore.makeParticles('gore');
+
+    monsterModule.create(this.gore);
     itemModule.create();
 
     this.levelText = game.add.text(16, 16, 'Level: 1', { fontSize: '16px', fill: '#670' });
@@ -104,11 +114,11 @@ const mainState = {
     this.spaceKey = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
 
+
   /*  this.topbar = game.add.image(20, 20, 'topbar');
     this.topbar.x = game.width/2 - this.topbar.width/2;
     console.log(this.topbar.x);*/
 
-    playerModule.pickUpItem(gunModule.getGun());
     this.spaceKey.onDown.add(function () {
       // When the pause  button is pressed, game is paused
       // menu
@@ -151,7 +161,7 @@ const mainState = {
     this.bmd.ctx.fillText(`Exp: ${playerModule.getExp()}`, 30, 90);
 
     this.ui.loadTexture(this.bmd);*/
-    game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
+    //game.physics.arcade.overlap(this.player, this.rabbit, this.killEnemy, null, this);
     game.physics.arcade.overlap(this.player, this.fruit, function(e){playerModule.pickUpItem(this.fruit);}, null, this);
     this.levelText.y = game.camera.y + 16;
     this.healthText.y = game.camera.y + 32;
@@ -182,6 +192,7 @@ const mainState = {
       if (!this.battleMusic.isPlaying) {
         this.battleMusic.fadeIn(1, true);
         this.backgroundMusic.fadeTo(1, 0.01);
+
       }
     }
     this.hitpointsUI.style.width = `${playerModule.getHealth() / 100 * 180}px`;
@@ -257,6 +268,11 @@ const mainState = {
     game.physics.arcade.moveToObject(player, rabbit, -200);
     // deal damage to the player
     player.health--;
+    //gore
+    this.gore.x = player.x;
+    this.gore.y = player.y;
+    this.gore.start(true, 2000, null, 100);
+
     // show text when hit
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
@@ -265,7 +281,12 @@ const mainState = {
     // kill the bullet
     bullet.kill();
     // deal damage to the rabbit
-    rabbit.health--;
+    rabbit.health-=1;
+    // show gore
+    this.gore.x = rabbit.x;
+    this.gore.y = rabbit.y;
+    this.gore.start(true, 2000, null, 100);
+
     // show text when hit
     this.hitText = game.add.text(rabbit.x, rabbit.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
@@ -287,7 +308,7 @@ const mainState = {
   },
   shootSlime(slime, bullet) {
     bullet.kill();
-    slime.health--;
+    slime.health-=1;
     this.hitText = game.add.text(slime.x, slime.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
     if (slime.health == 0) {
@@ -297,12 +318,18 @@ const mainState = {
       slime.health = 3;
       slime.nextShoot = game.time.now + 1000;
     }
+    this.gore.x = slime.x;
+    this.gore.y = slime.y;
+    this.gore.start(true, 2000, null, 100);
   },
   getShot(player, projectile) {
     projectile.reset(-10, -10);
     projectile.body.velocity.x = 0;
     projectile.body.velocity.y = 0;
     player.health--;
+    this.gore.x = player.x;
+    this.gore.y = player.y;
+    this.gore.start(true, 2000, null, 100);
     game.physics.arcade.moveToObject(player, this.slime, -100);
     this.hitText = game.add.text(player.x, player.y, '-1', { fontSize: '16px', fill: 'red' });
     this.destroyText(this.hitText);
