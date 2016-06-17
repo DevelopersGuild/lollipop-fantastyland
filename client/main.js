@@ -12,6 +12,17 @@ const game = new Phaser.Game(800, 640, Phaser.AUTO, '');
 let w = 800;
 let h = 640;
 
+const mainMenu = {
+  onSpace() {
+    console.log("space is pressed on mainMenu");
+    if (this.mainMenu.visible) {
+      this.mainMenu.visible = false;
+      game.paused = false;
+      console.log("space is pressed");
+    }
+  }
+}
+
 const pauseMenu = {
   unpause(event) {
     // Only act if paused
@@ -37,6 +48,7 @@ const pauseMenu = {
 
 
 const mainState = {
+
   preload() {
     // Modules
     playerModule.preload(game, this);
@@ -47,6 +59,7 @@ const mainState = {
     monsterModule.preload(game);
     itemModule.preload(game);
 
+    game.load.image('mainMenu', '/assets/mainmenu.png', 800, 640);
     game.load.image('fruit', '/assets/peach.png');
     game.load.image('dialogWindow', '/assets/dialog.png');
     game.load.image('gore', 'assets/gore.png');
@@ -119,11 +132,18 @@ const mainState = {
       } else {
           console.log("game paused false");
           this.pauseMenu.visible = false;
+
+          if (this.mainMenu.visible) {
+            this.mainMenu.visible = false;
+            // game.paused = false;
+            console.log("space is pressed");
+          }
       }
     });
 
     // Add a input listener that can help us return from being paused
     game.input.onDown.add(pauseMenu.unpause, {});
+
     // README: Keep this at the bottom of this function!
     levelModule.createEntities();
     levelModule.createTopLayer();
@@ -151,9 +171,16 @@ const mainState = {
     // UI Code
     this.hitpointsUI = document.getElementById('hitpoints');
 
+
     this.pauseMenu = game.add.sprite(270, 235, 'menu');
     this.pauseMenu.visible = false;
     this.pauseMenu.fixedToCamera = true;
+
+    this.mainMenu = game.add.sprite(0, 0, 'mainMenu');
+    // game.input.onDown.add(mainMenu.onSpace);
+    console.log("paul");
+    this.mainMenu.fixedToCamera = true;
+    game.paused = true;
   },
 
 
