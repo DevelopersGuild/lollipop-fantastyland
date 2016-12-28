@@ -250,14 +250,14 @@ const mainState = {
       itemModule.gainCap();
 
     if (!monsterModule.getAggroState()) {
-      if (this.backgroundMusic.volume <= 0.05) {
+      //if (this.backgroundMusic.volume <= 0.05) {
         this.backgroundMusic.fadeTo(1000, 1);
         this.battleMusic1.fadeOut(1000);
         this.battleMusic2.fadeOut(1000);
-      }
+      //}
     } else {
+      this.backgroundMusic.fadeTo(1, 0.01);
       if (!this.battleMusic1.isPlaying && !this.battleMusic2.isPlaying) {
-        this.backgroundMusic.fadeTo(1, 0.01);
         const num = Math.floor(Math.random() * 2) + 1;
         this[`battleMusic${num}`].fadeIn(1, true);
       }
