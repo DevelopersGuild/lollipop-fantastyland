@@ -14,6 +14,17 @@ canvas {
   margin-top: -320px;
 }
 
+#loading {
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  margin-left: -400px;
+  margin-top: -320px;
+  position: absolute;
+}
+
 .ui {
   width: 800px;
   height: 640px;

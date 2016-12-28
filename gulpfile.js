@@ -23,7 +23,7 @@ gulp.task('server', ['compile-js'], function() {
   browserSync.create().init({
     files: ['public/**'],
     port: 3001,
-    proxy: 'http://localhost:3000',
+    proxy: 'http://localhost:8080',
     ui: { port: 3002 },
     open: false,
   });

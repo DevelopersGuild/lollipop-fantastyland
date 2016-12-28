@@ -50,6 +50,8 @@ const pauseMenu = {
 const mainState = {
 
   preload() {
+    this.loadingText = game.add.text(16, 16, 'Loading...', { fontSize: '64px', fill: '#ffffff' });
+    this.loadingText.x = game.camera.x + 16;
     // Modules
     playerModule.preload(game, this);
     gunModule.preload(game);
@@ -72,7 +74,9 @@ const mainState = {
 
 
     game.load.audio('bgm', 'assets/bgm.mp3');
-    game.load.audio('battle', 'assets/battle.mp3');
+    game.load.audio('battle1', 'assets/battle1.mp3');
+    game.load.audio('battle2', 'assets/battle2.mp3');
+
     game.load.image('menu', '/assets/pauseMenuborder.png', 260, 180);
     game.load.image('shockwave', '/assets/shockwave.png');
 
@@ -104,7 +108,11 @@ const mainState = {
 
     // Music
     this.backgroundMusic = game.add.audio('bgm');
-    this.battleMusic = game.add.audio('battle');
+    this.battleMusic1 = game.add.audio('battle1');
+    this.battleMusic2 = game.add.audio('battle2');
+
+    // Placeholder
+    this.battleMusic = game.add.audio('battle1');
     this.backgroundMusic.play('', 0, 0, false);
 
     this.fruit = game.add.sprite(300, 300, 'fruit');
@@ -244,13 +252,14 @@ const mainState = {
     if (!monsterModule.getAggroState()) {
       if (this.backgroundMusic.volume <= 0.05) {
         this.backgroundMusic.fadeTo(1000, 1);
-        this.battleMusic.fadeOut(1000);
+        this.battleMusic1.fadeOut(1000);
+        this.battleMusic2.fadeOut(1000);
       }
     } else {
-      if (!this.battleMusic.isPlaying) {
-        this.battleMusic.fadeIn(1, true);
+      if (!this.battleMusic1.isPlaying && !this.battleMusic2.isPlaying) {
         this.backgroundMusic.fadeTo(1, 0.01);
-
+        const num = Math.floor(Math.random() * 2) + 1;
+        this[`battleMusic${num}`].fadeIn(1, true);
       }
     }
     this.hitpointsUI.style.width = `${180 * this.player.health / this.player.maxHealth}px`;

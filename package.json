@@ -24,6 +24,8 @@
   },
   "scripts": {
     "start": "node server/index.js",
+    "build": "gulp compile-js",
+    "dev": "gulp server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
